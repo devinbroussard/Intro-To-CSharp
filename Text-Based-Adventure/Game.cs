@@ -111,14 +111,12 @@ namespace Text_Based_Adventure
             string input = "";
             int inputReceived = -1;
 
-            while (inputReceived == -1)
-            {
                 Console.WriteLine(description);
                 
                 for (int i = 0; i < options.Length; i++)
                     Console.WriteLine($"{i + 1}. {options[i]}");
 
-                Console.Write("> ");
+                Console.Write("\n> ");
                 input = Console.ReadLine();
                 
                 //if the player typed an int...
@@ -140,7 +138,7 @@ namespace Text_Based_Adventure
                     Utilties.WriteRead("Invalid input.");
                 }
                 Console.Clear();
-            }
+
             return inputReceived;
         }
 
