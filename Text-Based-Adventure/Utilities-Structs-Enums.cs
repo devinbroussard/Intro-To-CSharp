@@ -24,10 +24,10 @@ namespace Text_Based_Adventure
         public float StatBoost;
         public ItemType equipType;
         public int Cost;
-        public playerClass classType;
+        public PlayerClass classType;
     }
 
     //Enum created to manage scenes
-    public enum Scene { STARTMENU, GETPLAYERNAME}
+    public enum Scene { STARTMENU, GETPLAYERNAME, GETPLAYERCLASS, BATTLE, ENTRANCE, ROOMONE }
 
 }

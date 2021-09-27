@@ -12,6 +12,7 @@ namespace Text_Based_Adventure
         private float _health;
         private float _attackPower;
         private float _defensePower;
+        private int _rewardMoney;
 
         //Creating read-only properties
         public string Name
@@ -56,6 +57,14 @@ namespace Text_Based_Adventure
             _health = health;
             _attackPower = attackPower;
             _defensePower = defensePower;
+        }
+        public Entity(string name, float attackPower, float defensePower, int rewardMoney)
+        {
+            _name = name;
+            _health = 100;
+            _attackPower = attackPower;
+            _defensePower = defensePower;
+            _rewardMoney = rewardMoney;
         }
 
         /// <summary>

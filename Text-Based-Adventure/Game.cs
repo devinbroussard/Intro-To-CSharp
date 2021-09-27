@@ -64,44 +64,90 @@ namespace Text_Based_Adventure
                 case Scene.STARTMENU:
                     DisplayStartMenu();
                     break;
+                case Scene.ENTRANCE:
+
+                    break;
                 case Scene.GETPLAYERNAME:
                     GetPlayerName();
+                    break;
+                case Scene.GETPLAYERCLASS:
+                    GetPlayerClass();
                     break;
             }
         }
 
-        private void StartMenu()
+        void DisplayStartMenu()
         {
-            Console.WriteLine("Hello player!");
-            Console.ReadKey(true);
+            Console.WriteLine("Hello player! Welcome to this text-based adventure game! During this game you will climb a tower while fighting enemies on the way to reach the final boss at the top!");
+            int choice = GetInput("Would you like to start a new game, or load an existing one?", "Start new game", "Load existing game");
+
+            if (choice == 0)
+                _currentScene = Scene.GETPLAYERNAME;
+
+            if (choice == 1)
+                Load();
+        }
+
+        private void DisplayEntranceScene()
+        {
+            Console.WriteLine(
+        }
+
+        void GetPlayerName()
+        {
+            Console.Clear();
+            Console.WriteLine("Please enter your name:");
+            _playerName = Console.ReadLine();
+            Console.Clear();
+
+            int choice = GetInput($"Hmm... Are you sure {_playerName} is your name?", "Yes", "No");
+
+            if (choice == 0)
+                _currentScene = Scene.GETPLAYERCLASS;
+        }
+
+        private void GetPlayerClass()
+        {
+            int choice = GetInput($"Okay {_playerName}, select a class:", "Knight", "Wizard", "Assassin");
+
+            if (choice == 0)
+                _player = new Player(_playerName, 100, 20, 40, _knightItems, PlayerClass.KNIGHT);
+            if (choice == 1)
+                _player = new Player(_playerName, 100, 60, 0, _wizardItems, PlayerClass.WIZARD);
+            if (choice == 2)
+                _player = new Player(_playerName, 100, 40, 20, _assassinItems, PlayerClass.ASSASSIN);
+
         }
 
         private void InitializeItems()
         {
             //Shop items
             Item healthPotion = new Item { Name = "Health Potion", StatBoost = 50, equipType = ItemType.HEALING, Cost = 50 };
-            Item longSword = new Item { Name = "Long Sword", StatBoost = 35, equipType = ItemType.ATTACK, Cost = 200 };
             Item ironShield = new Item { Name = "Iron Shield", StatBoost = 60, equipType = ItemType.DEFENSE, Cost = 200 };
             Item longDagger = new Item { Name = "Long Dagger", StatBoost = 60, equipType = ItemType.ATTACK, Cost = 200 };
-            Item shadowCloak = new Item { Name = "Shadow Cloak", StatBoost = 25, equipType = ItemType.DEFENSE, Cost = 200 };
             Item enchantedWand = new Item { Name = "Enchanted Wand", StatBoost = 75, equipType = ItemType.ATTACK, Cost = 200 };
 
             //Items for the knight class
-            Item sword = new Item { Name = "Sword", StatBoost = 20, equipType = ItemType.ATTACK, Cost = 50 };
-            Item shield = new Item { Name = "Shield", StatBoost = 40, equipType = ItemType.DEFENSE, Cost = 50 };
+            Item woodenShield = new Item { Name = "Wooden Shield", StatBoost = 40, equipType = ItemType.DEFENSE, Cost = 50 };
 
             //Items for the assassin class
-            Item dagger = new Item { Name = "Dagger", StatBoost = 40, equipType = ItemType.ATTACK, Cost = 50 };
-            Item cloak = new Item { Name = "Cloak", StatBoost = 15, equipType = ItemType.DEFENSE, Cost = 50 };
+            Item shortDagger = new Item { Name = "Short Dagger", StatBoost = 40, equipType = ItemType.ATTACK, Cost = 50 };
 
             //Items for the wizard class
-            Item wand = new Item { Name = "Wand", StatBoost = 60, equipType = ItemType.ATTACK, Cost = 50 };
+            Item basicWand = new Item { Name = "Basic Wand", StatBoost = 60, equipType = ItemType.ATTACK, Cost = 50 };
 
             //Creating class-specific item arrays
-            _knightItems = new Item[] { sword, shield };
-            _assassinItems = new Item[] { dagger, cloak };
-            _wizardItems = new Item[] { wand, healthPotion };
-            _shopItems = new Item[] { healthPotion, longSword, ironShield, longDagger, shadowCloak, enchantedWand };
+            _knightItems = new Item[] { woodenShield };
+            _assassinItems = new Item[] { shortDagger };
+            _wizardItems = new Item[] { basicWand };
+            _shopItems = new Item[] { healthPotion, ironShield, longDagger, enchantedWand };
+        }
+
+        private void InitializeEnemies()
+        {
+            Entity slime = new Entity("Slime", 10, 10, 25);
+            Entity skeleton = new Entity("Skeleton", 30, 20, 55);
+            Entity darkKnight = new Entity("Dark Knight", 50, 50, 80);
         }
 
         /// <summary>
@@ -153,44 +199,6 @@ namespace Text_Based_Adventure
             return inputReceived;
         }
 
-        void DisplayStartMenu()
-        {
-            Console.WriteLine("Hello player! Welcome to this text-based adventure game!");
-            int choice = GetInput("Would you like to start a new game, or load an existing one?", "Start new game", "Load existing game");
-
-            if (choice == 0)
-                _currentScene = Scene.GETPLAYERNAME;
-
-            if (choice == 1)
-                Load();
-        }
-
-        void GetPlayerName()
-        {
-            Console.Clear();
-            Console.WriteLine("Please enter your name:");
-            _playerName = Console.ReadLine();
-            Console.Clear();
-
-            int choice = GetInput($"Hmm... Are you sure {_playerName} is your name?", "Yes", "No");
-
-            if (choice == 0)
-                _currentScene++;
-        }
-
-        private void GetPlayerClass()
-        {
-            int choice = GetInput($"Okay {_playerName}, select a class:", "Knight", "Wizard", "Assassin");
-
-            if (choice == 0)
-                _player = new Player(_playerName, 100, 20, 40, _knightItems, PlayerClass.KNIGHT);
-            if (choice == 1)
-                _player = new Player(_playerName, 100, 60, 0, _wizardItems, PlayerClass.WIZARD);
-            if (choice == 2)
-                _player = new Player(_playerName, 100, 40, 20, _assassinItems, PlayerClass.ASSASSIN);
-
-        }
-        
         private void DisplayStats(Entity entity)
         {
             Console.WriteLine("Enemy Stats:\n");

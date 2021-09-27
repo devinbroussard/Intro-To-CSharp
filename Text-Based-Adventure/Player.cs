@@ -134,8 +134,9 @@ namespace Text_Based_Adventure
         public override bool Load(StreamReader reader)
         {
             int inventoryLength = 0;
-            _job = reader.ReadLine();
 
+            if (!Enum.TryParse<PlayerClass>(reader.ReadLine(), out _job))
+                return false;
             if (!base.Load(reader))
                 return false;
             if (!int.TryParse(reader.ReadLine(), out _currentItemIndex))
