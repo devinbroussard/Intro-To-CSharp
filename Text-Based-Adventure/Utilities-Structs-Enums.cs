@@ -22,6 +22,7 @@ namespace Text_Based_Adventure
         public string Name;
         public float StatBoost;
         public ItemType Type;
+        public int Cost;
     }
 
     //Enum created to manage scenes

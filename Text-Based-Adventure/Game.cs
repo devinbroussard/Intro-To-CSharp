@@ -8,6 +8,7 @@ namespace Text_Based_Adventure
     class Game
     {
         //Initializing variables
+        private string _playerName;
         private bool _gameOver;
         private Scene _currentScene;
         private Entity _currentEnemy;
@@ -75,23 +76,23 @@ namespace Text_Based_Adventure
         private void InitializeItems()
         {
             //Shop items
-            Item healthPotion = new Item { Name = "Health Potion", StatBoost = 50, Type = ItemType.HEALING };
-            Item longSword = new Item { Name = "Long Sword", StatBoost = 35, Type = ItemType.ATTACK };
-            Item ironShield = new Item { Name = "Iron Shield", StatBoost = 60, Type = ItemType.DEFENSE };
-            Item longDagger = new Item { Name = "Long Dagger", StatBoost = 60, Type = ItemType.ATTACK };
-            Item shadowCloak = new Item { Name = "Shadow Cloak", StatBoost = 25, Type = ItemType.DEFENSE };
-            Item enchantedWand = new Item { Name = "Enchanted Wand", StatBoost = 75, Type = ItemType.ATTACK };
+            Item healthPotion = new Item { Name = "Health Potion", StatBoost = 50, Type = ItemType.HEALING, Cost = 50 };
+            Item longSword = new Item { Name = "Long Sword", StatBoost = 35, Type = ItemType.ATTACK, Cost = 200 };
+            Item ironShield = new Item { Name = "Iron Shield", StatBoost = 60, Type = ItemType.DEFENSE, Cost = 200 };
+            Item longDagger = new Item { Name = "Long Dagger", StatBoost = 60, Type = ItemType.ATTACK, Cost = 200 };
+            Item shadowCloak = new Item { Name = "Shadow Cloak", StatBoost = 25, Type = ItemType.DEFENSE, Cost = 200 };
+            Item enchantedWand = new Item { Name = "Enchanted Wand", StatBoost = 75, Type = ItemType.ATTACK, Cost = 200 };
 
             //Items for the knight class
-            Item sword = new Item { Name = "Sword", StatBoost = 20, Type = ItemType.ATTACK };
-            Item shield = new Item { Name = "Shield", StatBoost = 40, Type = ItemType.DEFENSE };
+            Item sword = new Item { Name = "Sword", StatBoost = 20, Type = ItemType.ATTACK, Cost = 50 };
+            Item shield = new Item { Name = "Shield", StatBoost = 40, Type = ItemType.DEFENSE, Cost = 50 };
 
             //Items for the assassin class
-            Item dagger = new Item { Name = "Dagger", StatBoost = 40, Type = ItemType.ATTACK };
-            Item cloak = new Item { Name = "Cloak", StatBoost = 15, Type = ItemType.DEFENSE };
+            Item dagger = new Item { Name = "Dagger", StatBoost = 40, Type = ItemType.ATTACK, Cost = 50 };
+            Item cloak = new Item { Name = "Cloak", StatBoost = 15, Type = ItemType.DEFENSE, Cost = 50 };
 
             //Items for the wizard class
-            Item wand = new Item { Name = "Wand", StatBoost = 60, Type = ItemType.ATTACK };
+            Item wand = new Item { Name = "Wand", StatBoost = 60, Type = ItemType.ATTACK, Cost = 50 };
 
             //Creating class-specific item arrays
             _knightItems = new Item[] { sword, shield };
@@ -111,33 +112,40 @@ namespace Text_Based_Adventure
             string input = "";
             int inputReceived = -1;
 
-                Console.WriteLine(description);
-                
-                for (int i = 0; i < options.Length; i++)
-                    Console.WriteLine($"{i + 1}. {options[i]}");
+            Console.WriteLine($"{description}\n");
 
-                Console.Write("\n> ");
-                input = Console.ReadLine();
-                
-                //if the player typed an int...
-                if (int.TryParse(input, out inputReceived))
+            for (int i = 0; i < options.Length; i++)
+            {
+                Console.WriteLine($"{i + 1}. {options[i]}");
+            }
+            Console.Write("> ");
+
+            //Get input from player
+            input = Console.ReadLine();
+
+            //If the player typed an int...
+            if (int.TryParse(input, out inputReceived))
+            {
+                //...decrement the input and check if it's within the bounds of the array
+                inputReceived--;
+
+                if (inputReceived < 0 || inputReceived >= options.Length)
                 {
-                    //...decrement the input and check if it's within the bounds of the array
-                    inputReceived--;
-                    if (inputReceived < 0 || inputReceived >- options.Length)
-                    {
-                        //Set input received to be the default value
-                        inputReceived = -1;
-                        //Display error message
-                        Utilties.WriteRead("Invalid input.");
-                    }
-                }
-                else
-                {
+                    //Set the input received to be the default value
                     inputReceived = -1;
-                    Utilties.WriteRead("Invalid input.");
+                    //Display an error message
+                    Console.WriteLine("\nInvalid input.");
+                    Console.ReadKey(true);
                 }
-                Console.Clear();
+            }
+            else
+            {
+                inputReceived = -1;
+                Console.WriteLine("\nInvalid input.");
+                Console.ReadKey(true);
+            }
+
+            Console.Clear();
 
             return inputReceived;
         }
@@ -147,13 +155,36 @@ namespace Text_Based_Adventure
             Console.WriteLine("Hello player! Welcome to this text-based adventure game!");
             int choice = GetInput("Would you like to start a new game, or load an existing one?", "Start new game", "Load existing game");
 
-            if (choice == 1)
+            if (choice == 0)
                 _currentScene = Scene.GETPLAYERNAME;
+
+            if (choice == 1)
+                Load();
         }
 
         void GetPlayerName()
         {
+            Console.Clear();
+            Console.WriteLine("Please enter your name:");
+            _playerName = Console.ReadLine();
+            Console.Clear();
 
+            int choice = GetInput($"Hmm... Are you sure {_playerName} is your name?", "Yes", "No");
+
+            if (choice == 0)
+                _currentScene++;
+        }
+
+        private void GetPlayerClass()
+        {
+            int choice = GetInput($"Okay {_playerName}, select a class:", "Knight", "Wizard", "Assassin");
+
+
+        }
+
+        private bool Load()
+        {
+            return true;
         }
     }
 }
