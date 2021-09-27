@@ -132,9 +132,16 @@ namespace Text_Based_Adventure
 
         public override bool Load(StreamReader reader)
         {
+            _job = reader.ReadLine();
+
             if (!base.Load(reader))
                 return false;
-
+            if (!int.TryParse(reader.ReadLine(), out _currentItemIndex))
+                return false;
+            if (!int.TryParse(reader.ReadLine(), out _gold))
+                return false;
+            
+            string inventoryLength = 
 
             return true;
         }

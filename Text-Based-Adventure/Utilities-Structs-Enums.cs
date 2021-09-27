@@ -15,6 +15,7 @@ namespace Text_Based_Adventure
 
     //Enum created to manage item types
     public enum ItemType { DEFENSE, ATTACK, HEALING, NONE }
+    public enum playerClass { KNIGHT, WIZARD, ASSASSIN }
 
     //Item struct used for items
     public struct Item
@@ -23,6 +24,7 @@ namespace Text_Based_Adventure
         public float StatBoost;
         public ItemType Type;
         public int Cost;
+        public playerClass classType;
     }
 
     //Enum created to manage scenes
