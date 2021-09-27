@@ -45,6 +45,10 @@ namespace Text_Based_Adventure
         {
             get { return _currentItem; }
         }
+        public int Gold
+        {
+            get { return _gold; }
+        }
 
         //Constructors called when player is instantiated
         public Player(string name, float health, float attackPower, float defensePower, Item[] inventory, PlayerClass job) : base(name, health, attackPower, defensePower)
@@ -162,6 +166,18 @@ namespace Text_Based_Adventure
             return true;
         }
 
+        public void Buy(Item item)
+        {
+            _gold -= item.Cost;
 
+            Item[] newInventory = new Item[_inventory.Length + 1];
+
+            for (int i = 0; i < _inventory.Length; i++)
+                newInventory[_inventory.Length] = item;
+
+            newInventory[_inventory.Length] = item;
+
+            _inventory = newInventory;
+        }
     }
 }
