@@ -18,6 +18,7 @@ namespace Text_Based_Adventure
         private Item[] _assassinItems;
         private Item[] _wizardItems;
         private Item[] _shopItems;
+        Player _player;
         
         /// <summary>
         /// Main run function that is called by the program
@@ -40,6 +41,8 @@ namespace Text_Based_Adventure
         {
             _gameOver = false;
             _currentScene = Scene.STARTMENU;
+
+            InitializeItems();
         }
 
         //Function that is continiously called until the game is over
@@ -76,23 +79,23 @@ namespace Text_Based_Adventure
         private void InitializeItems()
         {
             //Shop items
-            Item healthPotion = new Item { Name = "Health Potion", StatBoost = 50, Type = ItemType.HEALING, Cost = 50 };
-            Item longSword = new Item { Name = "Long Sword", StatBoost = 35, Type = ItemType.ATTACK, Cost = 200 };
-            Item ironShield = new Item { Name = "Iron Shield", StatBoost = 60, Type = ItemType.DEFENSE, Cost = 200 };
-            Item longDagger = new Item { Name = "Long Dagger", StatBoost = 60, Type = ItemType.ATTACK, Cost = 200 };
-            Item shadowCloak = new Item { Name = "Shadow Cloak", StatBoost = 25, Type = ItemType.DEFENSE, Cost = 200 };
-            Item enchantedWand = new Item { Name = "Enchanted Wand", StatBoost = 75, Type = ItemType.ATTACK, Cost = 200 };
+            Item healthPotion = new Item { Name = "Health Potion", StatBoost = 50, equipType = ItemType.HEALING, Cost = 50 };
+            Item longSword = new Item { Name = "Long Sword", StatBoost = 35, equipType = ItemType.ATTACK, Cost = 200 };
+            Item ironShield = new Item { Name = "Iron Shield", StatBoost = 60, equipType = ItemType.DEFENSE, Cost = 200 };
+            Item longDagger = new Item { Name = "Long Dagger", StatBoost = 60, equipType = ItemType.ATTACK, Cost = 200 };
+            Item shadowCloak = new Item { Name = "Shadow Cloak", StatBoost = 25, equipType = ItemType.DEFENSE, Cost = 200 };
+            Item enchantedWand = new Item { Name = "Enchanted Wand", StatBoost = 75, equipType = ItemType.ATTACK, Cost = 200 };
 
             //Items for the knight class
-            Item sword = new Item { Name = "Sword", StatBoost = 20, Type = ItemType.ATTACK, Cost = 50 };
-            Item shield = new Item { Name = "Shield", StatBoost = 40, Type = ItemType.DEFENSE, Cost = 50 };
+            Item sword = new Item { Name = "Sword", StatBoost = 20, equipType = ItemType.ATTACK, Cost = 50 };
+            Item shield = new Item { Name = "Shield", StatBoost = 40, equipType = ItemType.DEFENSE, Cost = 50 };
 
             //Items for the assassin class
-            Item dagger = new Item { Name = "Dagger", StatBoost = 40, Type = ItemType.ATTACK, Cost = 50 };
-            Item cloak = new Item { Name = "Cloak", StatBoost = 15, Type = ItemType.DEFENSE, Cost = 50 };
+            Item dagger = new Item { Name = "Dagger", StatBoost = 40, equipType = ItemType.ATTACK, Cost = 50 };
+            Item cloak = new Item { Name = "Cloak", StatBoost = 15, equipType = ItemType.DEFENSE, Cost = 50 };
 
             //Items for the wizard class
-            Item wand = new Item { Name = "Wand", StatBoost = 60, Type = ItemType.ATTACK, Cost = 50 };
+            Item wand = new Item { Name = "Wand", StatBoost = 60, equipType = ItemType.ATTACK, Cost = 50 };
 
             //Creating class-specific item arrays
             _knightItems = new Item[] { sword, shield };
@@ -179,9 +182,33 @@ namespace Text_Based_Adventure
         {
             int choice = GetInput($"Okay {_playerName}, select a class:", "Knight", "Wizard", "Assassin");
 
+            if (choice == 0)
+                _player = new Player(_playerName, 100, 20, 40, _knightItems, PlayerClass.KNIGHT);
+            if (choice == 1)
+                _player = new Player(_playerName, 100, 60, 0, _wizardItems, PlayerClass.WIZARD);
+            if (choice == 2)
+                _player = new Player(_playerName, 100, 40, 20, _assassinItems, PlayerClass.ASSASSIN);
 
         }
+        
+        private void DisplayStats(Entity entity)
+        {
+            Console.WriteLine("Enemy Stats:\n");
+            Console.WriteLine($"Name: {entity.Name}");
+            Console.WriteLine($"Health: {entity.Health}");
+            Console.WriteLine($"Attack Power: {entity.AttackPower}");
+            Console.WriteLine($"Defense Power: {entity.DefensePower}");
+        }
 
+        private void DisplayStats(Player player)
+        {
+            Console.WriteLine("Your Stats:\n");
+            Console.WriteLine($"Name: {player.Name}");
+            Console.WriteLine($"Health: {player.Health}");
+            Console.WriteLine($"Attack Power: {player.AttackPower}");
+            Console.WriteLine($"Defense Power: {player.DefensePower}");
+            Console.WriteLine($"Equipped Item: {player.CurrentItem.Name}");
+        }
         private bool Load()
         {
             return true;

@@ -11,20 +11,21 @@ namespace Text_Based_Adventure
         private Item[] _inventory;
         private Item _currentItem;
         private int _currentItemIndex;
-        private string _job;
+        private PlayerClass _job;
         private int _gold;
         
 
         //Creating public properties
-        public string Job {
+        public PlayerClass Job {
             get { return _job; }
             set { _job = value; }
         }
+        //Attack and defense powers change depending on which item you have equipped
         public override float AttackPower
         {
             get
             {
-                if (_currentItem.Type == ItemType.ATTACK)
+                if (_currentItem.equipType == ItemType.ATTACK)
                     return base.AttackPower + CurrentItem.StatBoost;
 
                 return base.AttackPower;
@@ -34,7 +35,7 @@ namespace Text_Based_Adventure
         {
             get
             {
-                if (_currentItem.Type == ItemType.DEFENSE)
+                if (_currentItem.equipType == ItemType.DEFENSE)
                     return base.DefensePower + CurrentItem.StatBoost;
 
                 return base.DefensePower;
@@ -46,7 +47,7 @@ namespace Text_Based_Adventure
         }
 
         //Constructors called when player is instantiated
-        public Player(string name, float health, float attackPower, float defensePower, Item[] inventory, string job) : base(name, health, attackPower, defensePower)
+        public Player(string name, float health, float attackPower, float defensePower, Item[] inventory, PlayerClass job) : base(name, health, attackPower, defensePower)
         {
             _inventory = inventory;
             _currentItem.Name = "Nothing";
@@ -125,13 +126,14 @@ namespace Text_Based_Adventure
             {
                 writer.WriteLine(_inventory[i].Name);
                 writer.WriteLine(_inventory[i].StatBoost);
-                writer.WriteLine(_inventory[i].Type);
+                writer.WriteLine(_inventory[i].equipType);
                 writer.WriteLine(_inventory[i].Cost);
             }
         }
 
         public override bool Load(StreamReader reader)
         {
+            int inventoryLength = 0;
             _job = reader.ReadLine();
 
             if (!base.Load(reader))
@@ -140,8 +142,21 @@ namespace Text_Based_Adventure
                 return false;
             if (!int.TryParse(reader.ReadLine(), out _gold))
                 return false;
-            
-            string inventoryLength = 
+            if (!int.TryParse(reader.ReadLine(), out inventoryLength))
+                return false;
+
+            _inventory = new Item[inventoryLength];
+
+            for (int i = 0; i < _inventory.Length; i++)
+            {
+                _inventory[i].Name = reader.ReadLine();
+                if (!float.TryParse(reader.ReadLine(), out _inventory[i].StatBoost))
+                    return false;
+                if (!Enum.TryParse<ItemType>(reader.ReadLine(), out _inventory[i].equipType))
+                    return false;
+                if (!int.TryParse(reader.ReadLine(), out _inventory[i].Cost))
+                    return false;
+            }
 
             return true;
         }
