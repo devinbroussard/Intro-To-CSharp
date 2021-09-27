@@ -139,8 +139,6 @@ namespace Text_Based_Adventure
         {
             int inventoryLength = 0;
 
-            if (!Enum.TryParse<PlayerClass>(reader.ReadLine(), out _job))
-                return false;
             if (!base.Load(reader))
                 return false;
             if (!int.TryParse(reader.ReadLine(), out _currentItemIndex))

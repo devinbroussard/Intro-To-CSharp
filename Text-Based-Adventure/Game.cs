@@ -1,23 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 
 namespace Text_Based_Adventure
 {
    
     class Game
     {
-        //Initializing variables
+        //Defining variables
         private string _playerName;
         private bool _gameOver;
         private Scene _currentScene;
         private Entity _currentEnemy;
         private int _currentEnemyIndex;
         private Entity[] _enemies;
+
+        //Defining arrays containing entity/shop items
         private Item[] _knightItems;
         private Item[] _assassinItems;
         private Item[] _wizardItems;
         private Item[] _shopItems;
+
+        //Defining player entity
         Player _player;
         
         /// <summary>
@@ -25,12 +30,15 @@ namespace Text_Based_Adventure
         /// </summary>
         public void Run()
         {
+            //Start function called at the start of the game to initialize anything needed
             Start();
             //Loops until game is over
             while (!_gameOver)
             {
+                //Updates the current scene 
                 Update();
             }
+            //Called at the end of the function 
             End();
         }
         
@@ -42,6 +50,7 @@ namespace Text_Based_Adventure
             _gameOver = false;
             _currentScene = Scene.STARTMENU;
 
+            InitializeEnemies();
             InitializeItems();
         }
 
@@ -54,7 +63,8 @@ namespace Text_Based_Adventure
         //Function that is called at the end of the program;
         private void End() 
         {
-            Utilties.WriteRead("Goodbye, player!");
+            Console.WriteLine("Goodbye, player!");
+            Console.ReadKey(true);
         }
 
         void DisplayCurrentScene()
@@ -73,13 +83,20 @@ namespace Text_Based_Adventure
                 case Scene.GETPLAYERCLASS:
                     GetPlayerClass();
                     break;
+                case Scene.BATTLE:
+                    Battle();
+                    CheckBattleResults();
+                    break;
+                case Scene.BETWEENBATTLES:
+                    break;
+
             }
         }
 
         void DisplayStartMenu()
         {
-            Console.WriteLine("Hello player! Welcome to this text-based adventure game! During this game you will climb a tower while fighting enemies on the way to reach the final boss at the top!");
-            int choice = GetInput("Would you like to start a new game, or load an existing one?", "Start new game", "Load existing game");
+            Console.WriteLine("Hello player! In this game you will fight enemies to reach the top of a tower!");
+            int choice = GetInput("Would you like to start a new game, or load an existing save file?", "Start new game", "Load existing game");
 
             if (choice == 0)
                 _currentScene = Scene.GETPLAYERNAME;
@@ -90,17 +107,17 @@ namespace Text_Based_Adventure
 
         private void DisplayEntranceScene()
         {
-            Console.WriteLine(
+
         }
 
         void GetPlayerName()
         {
             Console.Clear();
             Console.WriteLine("Please enter your name:");
+            Console.Write("> ");
             _playerName = Console.ReadLine();
-            Console.Clear();
 
-            int choice = GetInput($"Hmm... Are you sure {_playerName} is your name?", "Yes", "No");
+            int choice = GetInput($"\nAre you sure {_playerName} is your name?", "Yes", "No");
 
             if (choice == 0)
                 _currentScene = Scene.GETPLAYERCLASS;
@@ -112,11 +129,17 @@ namespace Text_Based_Adventure
 
             if (choice == 0)
                 _player = new Player(_playerName, 100, 20, 40, _knightItems, PlayerClass.KNIGHT);
-            if (choice == 1)
+            else if (choice == 1)
                 _player = new Player(_playerName, 100, 60, 0, _wizardItems, PlayerClass.WIZARD);
-            if (choice == 2)
+            else if (choice == 2)
                 _player = new Player(_playerName, 100, 40, 20, _assassinItems, PlayerClass.ASSASSIN);
 
+            _currentScene = Scene.BATTLE;
+        }
+
+        private void DisplayBetweenBattle()
+        {
+            //Not finished
         }
 
         private void InitializeItems()
@@ -148,6 +171,10 @@ namespace Text_Based_Adventure
             Entity slime = new Entity("Slime", 10, 10, 25);
             Entity skeleton = new Entity("Skeleton", 30, 20, 55);
             Entity darkKnight = new Entity("Dark Knight", 50, 50, 80);
+
+            _enemies = new Entity[] { slime, skeleton, darkKnight };
+            _currentEnemyIndex = 0;
+            _currentEnemy = _enemies[_currentEnemyIndex];
         }
 
         /// <summary>
@@ -201,25 +228,168 @@ namespace Text_Based_Adventure
 
         private void DisplayStats(Entity entity)
         {
-            Console.WriteLine("Enemy Stats:\n");
-            Console.WriteLine($"Name: {entity.Name}");
-            Console.WriteLine($"Health: {entity.Health}");
-            Console.WriteLine($"Attack Power: {entity.AttackPower}");
-            Console.WriteLine($"Defense Power: {entity.DefensePower}");
+            Console.WriteLine("\nEnemy Stats:");
+            Console.WriteLine($"    Name: {entity.Name}");
+            Console.WriteLine($"    Health: {entity.Health}");
+            Console.WriteLine($"    Attack Power: {entity.AttackPower}");
+            Console.WriteLine($"    Defense Power: {entity.DefensePower}\n");
         }
 
         private void DisplayStats(Player player)
         {
-            Console.WriteLine("Your Stats:\n");
-            Console.WriteLine($"Name: {player.Name}");
-            Console.WriteLine($"Health: {player.Health}");
-            Console.WriteLine($"Attack Power: {player.AttackPower}");
-            Console.WriteLine($"Defense Power: {player.DefensePower}");
-            Console.WriteLine($"Equipped Item: {player.CurrentItem.Name}");
+            Console.WriteLine("Your Stats:");
+            Console.WriteLine($"    Name: {player.Name}");
+            Console.WriteLine($"    Class: {player.Job}");
+            Console.WriteLine($"    Health: {player.Health}");
+            Console.WriteLine($"    Attack Power: {player.AttackPower}");
+            Console.WriteLine($"    Defense Power: {player.DefensePower}");
+            Console.WriteLine($"    Equipped Item: {player.CurrentItem.Name}\n");
         }
+
+        /// <summary>
+        /// Function used to call Save functions from multiple enemies
+        /// </summary>
+        private void Save()
+        {
+            //creates a new streamwriter
+            StreamWriter writer = new StreamWriter("SaveData.txt");
+
+            //saves the current enemy index
+            writer.WriteLine(_currentEnemyIndex);
+
+            //calls both of the 
+            _player.Save(writer);
+            _currentEnemy.Save(writer);
+
+            //closes the writer
+            writer.Close();
+        }
+
+        /// <summary>
+        /// Function used to call load functions from multiple enemies
+        /// </summary>
+        /// <returns>True if the load is successful</returns>
         private bool Load()
         {
-            return true;
+            //crating a variable we can easily return
+            bool loadSuccessful = true;
+            PlayerClass playerJob;
+
+            StreamReader reader = new StreamReader("SaveData.txt");
+
+            if (!int.TryParse(reader.ReadLine(), out _currentEnemyIndex))
+                loadSuccessful = false;
+             if (!Enum.TryParse<PlayerClass>(reader.ReadLine(), out playerJob))
+                loadSuccessful = false;
+
+            _player.Job = playerJob;
+
+            if (_player.Job == PlayerClass.KNIGHT)
+                _player = new Player(_knightItems);
+            else if (_player.Job == PlayerClass.WIZARD)
+                _player = new Player(_wizardItems);
+            else if (_player.Job == PlayerClass.ASSASSIN)
+                _player = new Player(_assassinItems);
+
+            if (!_player.Load(reader))
+                loadSuccessful = false;
+            if (!_currentEnemy.Load(reader))
+                loadSuccessful = false;
+
+
+            return loadSuccessful;
+        }
+
+        private void Battle()
+        {
+            DisplayStats(_player);
+            DisplayStats(_currentEnemy);
+
+            int choice = GetInput($"A {_currentEnemy.Name} stands in front of you! What will you do:", "Attack", "Equip Item", "Remove current Item", "Save Game");
+
+            Console.Clear();
+
+            if (choice == 0)
+            {
+                float damage = _player.Attack(_currentEnemy);
+                Console.WriteLine($"You dealt {damage} damage!");
+
+                damage = _currentEnemy.Attack(_player);
+                Console.WriteLine($"The {_currentEnemy.Name} dealt {damage} damage!");
+ 
+            }
+            
+            else if (choice == 1)
+            {
+                DisplayEquipItemMenu();
+            }
+
+            else if (choice == 2)
+            {
+                if (!_player.TryRemoveCurrentItem())
+                    Console.WriteLine("You don't have anything equipped.");
+                else
+                    Console.WriteLine("You placed the item in your bag.");
+            }
+
+            else if (choice == 3)
+            {
+                Save();
+                Console.WriteLine("Game saved successfully!");
+            }
+            Console.ReadKey(true);
+            Console.Clear();
+        }
+
+        private void CheckBattleResults()
+        {
+            if (_player.Health == 0)
+            {
+                Console.WriteLine("You died!");
+                Console.WriteLine("Game over!");
+                Console.ReadKey(true);
+                Console.Clear();
+
+                //Put restart menu here
+            }
+
+            else if (_currentEnemy.Health == 0)
+            {
+                Console.WriteLine($"You slayed the {_currentEnemy.Name}!");
+                Console.ReadKey(true);
+                Console.Clear();
+                _currentEnemyIndex++;
+                
+                //Not finished
+            }
+        }
+
+        private bool TryFinalBoss()
+        {
+            bool fightBoss = _currentEnemyIndex >= _enemies.Length;
+
+            if (fightBoss)
+            {
+                Console.WriteLine("You have reached the highest floor. The final boss awaits on the roof");
+                int choice = GetInput("What would you like to do?", "Fight more enemies outside (You can come back later)", "Go to the shop", "Fight the boss");
+
+                //plug different choices here
+
+            }
+
+            return fightBoss;
+        }
+        /// <summary>
+        /// Allows the player to select an item to equip out of the player inventory
+        /// </summary>
+        private void DisplayEquipItemMenu()
+        {
+            int choice = GetInput("Select an item to equip.", _player.GetItemNames());
+
+            if (!_player.TryEquipItem(choice))
+                Console.WriteLine("You couldn't find that item in your bag!");
+
+            Console.WriteLine($"You equipped {_player.CurrentItem.Name}");
         }
     }
 }
