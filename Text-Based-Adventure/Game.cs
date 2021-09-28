@@ -5,7 +5,7 @@ using System.IO;
 
 namespace Text_Based_Adventure
 {
-   
+
     class Game
     {
         //Defining variables
@@ -15,6 +15,7 @@ namespace Text_Based_Adventure
         private Entity _currentEnemy;
         private int _currentEnemyIndex;
         private Entity[] _enemies;
+        private Shop _shop;
 
         //Defining arrays containing entity/shop items
         private Item[] _knightItems;
@@ -24,7 +25,7 @@ namespace Text_Based_Adventure
 
         //Defining player entity
         Player _player;
-        
+
         /// <summary>
         /// Main run function that is called by the program
         /// </summary>
@@ -41,7 +42,7 @@ namespace Text_Based_Adventure
             //Called at the end of the function 
             End();
         }
-        
+
         /// <summary>
         /// Function called when the program is opened
         /// </summary>
@@ -55,15 +56,16 @@ namespace Text_Based_Adventure
         }
 
         //Function that is continiously called until the game is over
-        private void Update() 
+        private void Update()
         {
             DisplayCurrentScene();
         }
 
         //Function that is called at the end of the program;
-        private void End() 
+        private void End()
         {
             Console.WriteLine("Goodbye, player!");
+
             Console.ReadKey(true);
         }
 
@@ -78,7 +80,7 @@ namespace Text_Based_Adventure
                     DisplayStartMenu();
                     break;
                 case Scene.ENTRANCE:
-
+                    DisplayEntranceScene();
                     break;
                 case Scene.GETPLAYERNAME:
                     GetPlayerName();
@@ -91,6 +93,10 @@ namespace Text_Based_Adventure
                     CheckBattleResults();
                     break;
                 case Scene.BETWEENBATTLES:
+
+                    break;
+                case Scene.SHOP:
+                    DisplayShopMenu();
                     break;
 
             }
@@ -111,9 +117,19 @@ namespace Text_Based_Adventure
                 Load();
         }
 
+        private void DisplayBetweenBattlesScene()
+        {
+            
+        }
+
         private void DisplayEntranceScene()
         {
+            Console.WriteLine("You approach the tower...");
+            Console.WriteLine("You notice there is a shop near the front entrance");
+            Console.ReadKey(true);
+            Console.Clear();
 
+            _currentScene = Scene.BETWEENBATTLES;
         }
 
         /// <summary>
@@ -179,6 +195,8 @@ namespace Text_Based_Adventure
             _assassinItems = new Item[] { shortDagger };
             _wizardItems = new Item[] { basicWand };
             _shopItems = new Item[] { healthPotion, ironShield, longDagger, enchantedWand };
+
+            _shop = new Shop(_shopItems);
         }
 
         /// <summary>
@@ -305,7 +323,7 @@ namespace Text_Based_Adventure
 
             if (!int.TryParse(reader.ReadLine(), out _currentEnemyIndex))
                 loadSuccessful = false;
-             if (!Enum.TryParse<PlayerClass>(reader.ReadLine(), out playerJob))
+            if (!Enum.TryParse<PlayerClass>(reader.ReadLine(), out playerJob))
                 loadSuccessful = false;
 
             _player.Job = playerJob;
@@ -345,9 +363,9 @@ namespace Text_Based_Adventure
 
                 damage = _currentEnemy.Attack(_player);
                 Console.WriteLine($"The {_currentEnemy.Name} dealt {damage} damage!");
- 
+
             }
-            
+
             else if (choice == 1)
             {
                 DisplayEquipItemMenu();
@@ -391,10 +409,11 @@ namespace Text_Based_Adventure
                 Console.ReadKey(true);
                 Console.Clear();
                 _currentEnemyIndex++;
-                
+
                 //Not finished
             }
         }
+        
 
         private bool TryFinalBoss()
         {
@@ -422,6 +441,72 @@ namespace Text_Based_Adventure
                 Console.WriteLine("You couldn't find that item in your bag!");
 
             Console.WriteLine($"You equipped {_player.CurrentItem.Name}");
+        }
+
+        private string[] GetShopMenuOptions()
+        {
+            string[] shopItems = _shop.GetItemNames();
+            string[] menuOptions = new string[shopItems.Length + 2];
+
+            for (int i = 0; i < shopItems.Length; i++)
+            {
+                menuOptions[i] = shopItems[i];
+            }
+
+            menuOptions[shopItems.Length] = "Save Game";
+            menuOptions[shopItems.Length + 1] = "Quit Game";
+
+            return menuOptions;
+        }
+
+        private void DisplayShopMenu()
+        {
+            string[] playerItemNames = _player.GetItemNames();
+
+            Console.WriteLine($"Your gold: {_player.Gold}\n");
+            Console.WriteLine("Your inventory:");
+            for (int i = 0; i < playerItemNames.Length; i++)
+            {
+                Console.WriteLine(playerItemNames[i]);
+            }
+            Console.WriteLine();
+
+
+            int inputReceived = GetInput("What would you like to purchase?", GetShopMenuOptions());
+
+            if (inputReceived >= 0 && inputReceived < GetShopMenuOptions().Length - 2)
+            {
+                if (_shop.Sell(_player, inputReceived))
+                {
+                    Console.Clear();
+                    Console.WriteLine($"You purchased the {_shop.GetItemNames()[inputReceived]}!");
+                    Console.ReadKey();
+                    Console.Clear();
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("You don't have enough gold for that.");
+                    Console.ReadKey(true);
+                    Console.Clear();
+                }
+            }
+
+            if (inputReceived == GetShopMenuOptions().Length - 2)
+            {
+                Console.Clear();
+                Save();
+
+                Console.WriteLine("Game saved successfully!");
+                Console.ReadKey(true);
+                Console.Clear();
+
+            }
+            if (inputReceived == GetShopMenuOptions().Length - 1)
+            {
+                _gameOver = true;
+            }
+
         }
     }
 }

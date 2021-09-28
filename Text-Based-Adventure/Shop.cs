@@ -10,7 +10,7 @@ namespace Text_Based_Adventure
         private int _gold;
         private Item[] _inventory;
 
-        public Shop(params Item[] inventory)
+        public Shop(Item[] inventory)
         {
             _inventory = inventory;
         }
