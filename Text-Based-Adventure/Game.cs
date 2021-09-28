@@ -67,6 +67,9 @@ namespace Text_Based_Adventure
             Console.ReadKey(true);
         }
 
+        /// <summary>
+        /// Called to display a current scene
+        /// </summary>
         void DisplayCurrentScene()
         {
             switch (_currentScene)
@@ -93,6 +96,9 @@ namespace Text_Based_Adventure
             }
         }
 
+        /// <summary>
+        /// Used as the welcome screen
+        /// </summary>
         void DisplayStartMenu()
         {
             Console.WriteLine("Hello player! In this game you will fight enemies to reach the top of a tower!");
@@ -110,6 +116,9 @@ namespace Text_Based_Adventure
 
         }
 
+        /// <summary>
+        /// Used to ask the player for their name
+        /// </summary>
         void GetPlayerName()
         {
             Console.Clear();
@@ -123,6 +132,9 @@ namespace Text_Based_Adventure
                 _currentScene = Scene.GETPLAYERCLASS;
         }
 
+        /// <summary>
+        /// Asks the player to select a class and assigns their stats accordingly
+        /// </summary>
         private void GetPlayerClass()
         {
             int choice = GetInput($"Okay {_playerName}, select a class:", "Knight", "Wizard", "Assassin");
@@ -142,6 +154,9 @@ namespace Text_Based_Adventure
             //Not finished
         }
 
+        /// <summary>
+        /// Initializes all the used items in the game
+        /// </summary>
         private void InitializeItems()
         {
             //Shop items
@@ -166,6 +181,9 @@ namespace Text_Based_Adventure
             _shopItems = new Item[] { healthPotion, ironShield, longDagger, enchantedWand };
         }
 
+        /// <summary>
+        /// Initializes all of the enemies fought in the game
+        /// </summary>
         private void InitializeEnemies()
         {
             Entity slime = new Entity("Slime", 10, 10, 25);
@@ -226,6 +244,10 @@ namespace Text_Based_Adventure
             return inputReceived;
         }
 
+        /// <summary>
+        /// Displays the stats of an enemy
+        /// </summary>
+        /// <param name="entity"></param>
         private void DisplayStats(Entity entity)
         {
             Console.WriteLine("\nEnemy Stats:");
@@ -235,6 +257,10 @@ namespace Text_Based_Adventure
             Console.WriteLine($"    Defense Power: {entity.DefensePower}\n");
         }
 
+        /// <summary>
+        /// Displays the stats of the player
+        /// </summary>
+        /// <param name="player"></param>
         private void DisplayStats(Player player)
         {
             Console.WriteLine("Your Stats:");
@@ -300,6 +326,9 @@ namespace Text_Based_Adventure
             return loadSuccessful;
         }
 
+        /// <summary>
+        /// Function used to start a battle between the player and the current enemy
+        /// </summary>
         private void Battle()
         {
             DisplayStats(_player);
@@ -341,6 +370,9 @@ namespace Text_Based_Adventure
             Console.Clear();
         }
 
+        /// <summary>
+        /// Checks the outcome of the battle and assigns a new enemy or ends the game
+        /// </summary>
         private void CheckBattleResults()
         {
             if (_player.Health == 0)
