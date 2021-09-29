@@ -8,10 +8,13 @@ namespace Text_Based_Adventure
 
     class Game
     {
-        //Defining variables
+        //Holds the players name until it is initialized
         private string _playerName;
+        //Holds if the game is over or not
         private bool _gameOver;
+        //Holds the current scene
         private Scene _currentScene;
+        //Holds the current enemy;
         private Entity _currentEnemy;
         private int _currentEnemyIndex;
         private Entity[] _enemies;
@@ -101,6 +104,9 @@ namespace Text_Based_Adventure
                 case Scene.SHOP:
                     DisplayShopMenu();
                     break;
+                case Scene.RESTARTMENU:
+                    DisplayRestartMenu();
+                    break;
 
             }
         }
@@ -148,8 +154,7 @@ namespace Text_Based_Adventure
 
         private void DisplayEntranceScene()
         {
-            Console.WriteLine("You approach the tower...");
-            Console.WriteLine("You notice there is a shop near the front entrance");
+            Console.WriteLine("You approach the tower and notice there is a shop near the front entrance");
             Console.ReadKey(true);
             Console.Clear();
 
@@ -180,11 +185,11 @@ namespace Text_Based_Adventure
             int choice = GetInput($"Okay {_playerName}, select a class:", "Knight", "Wizard", "Assassin");
 
             if (choice == 0)
-                _player = new Player(_playerName, 100, 20, 40, _knightItems, PlayerClass.KNIGHT, 2000);
+                _player = new Player(_playerName, 100, 25, 50,  _knightItems, PlayerClass.KNIGHT);
             else if (choice == 1)
-                _player = new Player(_playerName, 100, 60, 0, _wizardItems, PlayerClass.WIZARD, 2000);
+                _player = new Player(_playerName, 100, 80, 0, _wizardItems, PlayerClass.WIZARD);
             else if (choice == 2)
-                _player = new Player(_playerName, 100, 40, 20, _assassinItems, PlayerClass.ASSASSIN, 2000);
+                _player = new Player(_playerName, 100, 60, 25, _assassinItems, PlayerClass.ASSASSIN);
 
             _currentScene = Scene.ENTRANCE;
         }
@@ -225,17 +230,15 @@ namespace Text_Based_Adventure
         {
             Entity slime = new Entity("Slime", 10, 10, 25);
             Entity skeleton = new Entity("Skeleton", 30, 20, 55);
-
-            Entity cursedMannequin = new Entity("Cursed Mannequin", 30, 75, 150);
-            Entity darkKnight = new Entity("Dark Knight", 50, 40, 100);
-
-            Entity bossSideKick = new Entity("Boss' Side Kick", 75, 50, 200);
+            Entity cursedMannequin = new Entity("Cursed Mannequin", 20, 75, 150);
+            Entity darkKnight = new Entity("Dark Knight", 60, 20, 100);
+            Entity finalBoss = new Entity("Final Boss", 95, 30, 1000);
 
 
 
 
             _currentEnemyIndex = 0;
-            _enemies = new Entity[] { slime, skeleton, cursedMannequin, darkKnight, bossSideKick };
+            _enemies = new Entity[] { slime, skeleton, cursedMannequin, darkKnight, finalBoss };
             _currentEnemy = _enemies[_currentEnemyIndex];
         }
 
@@ -326,6 +329,8 @@ namespace Text_Based_Adventure
 
             //saves the current enemy index
             writer.WriteLine(_currentEnemyIndex);
+            writer.WriteLine(_currentScene);
+            writer.WriteLine(_currentFloorTextIndex);
 
             //calls both of the 
             _player.Save(writer);
@@ -349,16 +354,20 @@ namespace Text_Based_Adventure
 
             if (!int.TryParse(reader.ReadLine(), out _currentEnemyIndex))
                 loadSuccessful = false;
+            if (!Enum.TryParse<Scene>(reader.ReadLine(), out _currentScene))
+                return false;
+            if (!int.TryParse(reader.ReadLine(), out _currentFloorTextIndex))
+                loadSuccessful = false;
+
+
             if (!Enum.TryParse<PlayerClass>(reader.ReadLine(), out playerJob))
                 loadSuccessful = false;
 
-            _player.Job = playerJob;
-
-            if (_player.Job == PlayerClass.KNIGHT)
+            if (playerJob == PlayerClass.KNIGHT)
                 _player = new Player(_knightItems);
-            else if (_player.Job == PlayerClass.WIZARD)
+            else if (playerJob == PlayerClass.WIZARD)
                 _player = new Player(_wizardItems);
-            else if (_player.Job == PlayerClass.ASSASSIN)
+            else if (playerJob == PlayerClass.ASSASSIN)
                 _player = new Player(_assassinItems);
 
             if (!_player.Load(reader))
@@ -366,6 +375,7 @@ namespace Text_Based_Adventure
             if (!_currentEnemy.Load(reader))
                 loadSuccessful = false;
 
+            reader.Close();
 
             return loadSuccessful;
         }
@@ -429,7 +439,6 @@ namespace Text_Based_Adventure
             if (_player.Health == 0)
             {
                 Console.WriteLine("You died!");
-                Console.WriteLine("Game over!");
                 Console.ReadKey(true);
                 Console.Clear();
 
@@ -486,14 +495,18 @@ namespace Text_Based_Adventure
         {
             int choice = GetInput("Select an item to equip.", _player.GetItemNames());
 
-            if (_player.GetItemNames()[choice] == "Health Potion")
+            if (_player.GetItemNames()[choice] == "Health Potion" && _player.TryEquipItem(choice))
             {
+
                 Console.WriteLine("You used a health potion!");
                 return;
             }
-
-           Console.WriteLine($"You equipped {_player.CurrentItem.Name}");
-
+            else if (_player.TryEquipItem(choice))
+                Console.WriteLine($"You equipped the {_player.CurrentItem.Name}");
+            else
+            {
+                Console.WriteLine("You couldn't find that item in your bag.");
+            }
         }
 
         private string[] GetShopMenuOptions()
@@ -532,16 +545,19 @@ namespace Text_Based_Adventure
 
             if (choice >= 3 && choice < GetShopMenuOptions().Length - 3)
             {
+                Console.Clear();
                 if (_shop.Sell(_player, choice))
                 {
-                    Console.Clear();
                     Console.WriteLine($"You purchased the {_shop.GetItemNames()[choice]}!");
+                    Console.ReadKey(true);
                 }
                 else
                 {
-                    Console.Clear();
                     Console.WriteLine("You don't have enough gold for that.");
                 }
+
+                Console.ReadKey(true);
+                Console.Clear();
             }
 
 
@@ -578,19 +594,17 @@ namespace Text_Based_Adventure
 
             else if (choice == GetShopMenuOptions().Length - 2)
             {
-                Console.Clear();
                 Save();
 
                 Console.WriteLine("Game saved successfully!");
+                Console.ReadKey(true);
+                Console.Clear();
 
             }
             else if (choice == GetShopMenuOptions().Length - 1)
             {
                 _gameOver = true;
             }
-
-            Console.ReadKey(true);
-            Console.Clear();
         }
         
         private void DisplayRestartMenu()

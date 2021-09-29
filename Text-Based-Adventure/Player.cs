@@ -51,12 +51,12 @@ namespace Text_Based_Adventure
         }
 
         //Constructors called when player is instantiated
-        public Player(string name, float health, float attackPower, float defensePower, Item[] inventory, PlayerClass job, int gold) : base(name, health, attackPower, defensePower)
+        public Player(string name, float health, float attackPower, float defensePower, Item[] inventory, PlayerClass job) : base(name, health, attackPower, defensePower)
         {
             _inventory = inventory;
             _currentItem.Name = "Nothing";
             _job = job;
-            _gold = gold;
+            _gold = 50;
         }
         public Player(Item[] inventory)
         {
@@ -163,7 +163,7 @@ namespace Text_Based_Adventure
 
         public override bool Load(StreamReader reader)
         {
-            int inventoryLength = 0;
+            int inventoryLength;
 
             if (!base.Load(reader))
                 return false;
@@ -186,6 +186,8 @@ namespace Text_Based_Adventure
                 if (!int.TryParse(reader.ReadLine(), out _inventory[i].Cost))
                     return false;
             }
+
+            TryEquipItem(_currentItemIndex);
 
             return true;
         }
