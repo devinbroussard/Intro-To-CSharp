@@ -82,21 +82,26 @@ namespace Text_Based_Adventure
 
             if (_inventory[index].equipType == ItemType.HEALING)
             {
+                Item currentItem = _currentItem;
+
                 base.Heal(_inventory[index].StatBoost);
+
 
                 Item[] newInventory = new Item[_inventory.Length - 1];
 
                 for (int i = 0; i < index; i++)
                 {
-                        newInventory[i] = _inventory[i];
+                    newInventory[i] = _inventory[i];
                 }
 
-                for (int i = index + 1; i < _inventory.Length - 1; i++)
+                for (int i = index; i < _inventory.Length - 1; i++)
                 {
                     newInventory[i] = _inventory[i + 1];
                 }
 
                 _inventory = newInventory;
+                _currentItem = currentItem;
+
                 return true;
             }
 

@@ -482,13 +482,18 @@ namespace Text_Based_Adventure
         /// Allows the player to select an item to equip out of the player inventory
         /// </summary>
         private void DisplayEquipItemMenu()
+        
         {
             int choice = GetInput("Select an item to equip.", _player.GetItemNames());
 
-            if (!_player.TryEquipItem(choice))
-                Console.WriteLine("You couldn't find that item in your bag!");
+            if (_player.GetItemNames()[choice] == "Health Potion")
+            {
+                Console.WriteLine("You used a health potion!");
+                return;
+            }
 
-            Console.WriteLine($"You equipped {_player.CurrentItem.Name}");
+           Console.WriteLine($"You equipped {_player.CurrentItem.Name}");
+
         }
 
         private string[] GetShopMenuOptions()
