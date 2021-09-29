@@ -609,7 +609,7 @@ namespace Text_Based_Adventure
         
         private void DisplayRestartMenu()
         {
-            int choice = GetInput("The game is over. What would you like to do?", "Load Game", "Quit Game");
+            int choice = GetInput("The game is over. What would you like to do?", "Load Game", "Restart Game",  "Quit Game");
 
             if (choice == 0)
             {
@@ -622,6 +622,12 @@ namespace Text_Based_Adventure
             }
 
             if (choice == 1)
+            {
+                InitializeEnemies();
+                _currentScene = 0;
+            }
+
+            if (choice == 2)
             {
                 _gameOver = true;
             }
