@@ -132,7 +132,7 @@ namespace Text_Based_Adventure
 
             if (choice == 0)
             {
-                Console.WriteLine($"You enter the {_floorText[_currentFloorTextIndex]} floor.");
+                Console.WriteLine($"You enter the {_floorText[_currentFloorTextIndex]} floor.\n");
                 _currentFloorTextIndex++;
 
 
@@ -150,11 +150,25 @@ namespace Text_Based_Adventure
                 Console.Clear();
                 _currentScene = Scene.SHOP;
             }
+
+            else if (choice == 2)
+            {
+                Save();
+
+                Console.WriteLine("Game saved successfully!");
+                Console.ReadKey(true);
+                Console.Clear();
+
+            }
+            else if (choice == 3)
+            {
+                _gameOver = true;
+            }
         }
 
         private void DisplayEntranceScene()
         {
-            Console.WriteLine("You approach the tower and notice there is a shop near the front entrance");
+            Console.WriteLine("You approach the tower and notice there is a shop near the front entrance...");
             Console.ReadKey(true);
             Console.Clear();
 
@@ -230,7 +244,7 @@ namespace Text_Based_Adventure
         {
             Entity slime = new Entity("Slime", 10, 10, 50);
             Entity skeleton = new Entity("Skeleton", 30, 20, 75);
-            Entity cursedMannequin = new Entity("Cursed Mannequin", 20, 100, 150);
+            Entity cursedMannequin = new Entity("Cursed Mannequin", 20, 10, 150);
             Entity darkKnight = new Entity("Dark Knight", 60, 20, 150);
             Entity finalBoss = new Entity("Final Boss", 95, 30, 1000);
 
@@ -399,6 +413,8 @@ namespace Text_Based_Adventure
 
                 damage = _currentEnemy.Attack(_player);
                 Console.WriteLine($"The {_currentEnemy.Name} dealt {damage} damage!");
+                Console.ReadKey(true);
+                Console.Clear();
 
             }
 
@@ -413,12 +429,16 @@ namespace Text_Based_Adventure
                     Console.WriteLine("You don't have anything equipped.");
                 else
                     Console.WriteLine("You placed the item in your bag.");
+                Console.ReadKey(true);
+                Console.Clear();
             }
 
             else if (choice == 3)
             {
                 Save();
                 Console.WriteLine("Game saved successfully!");
+                Console.ReadKey(true);
+                Console.Clear();
             }
 
             else if (choice == 4)
@@ -427,8 +447,7 @@ namespace Text_Based_Adventure
                 return;
             }
 
-            Console.ReadKey(true);
-            Console.Clear();
+
         }
 
         /// <summary>
@@ -447,7 +466,7 @@ namespace Text_Based_Adventure
 
             else if (_currentEnemy.Health == 0)
             {
-                Console.WriteLine($"You slayed the {_currentEnemy.Name} and collected {_player.GetRewardMoney(_currentEnemy)} gold!");
+                Console.WriteLine($"You slayed the {_currentEnemy.Name} and collected {_player.GetRewardMoney(_currentEnemy)} gold!\n");
                 Console.WriteLine($"Current Gold: {_player.Gold}");
                 Console.ReadKey(true);
                 Console.Clear();
@@ -495,18 +514,26 @@ namespace Text_Based_Adventure
         {
             int choice = GetInput("Select an item to equip.", _player.GetItemNames());
 
-            if (_player.GetItemNames()[choice] == "Health Potion" && _player.TryEquipItem(choice))
+            if (choice <= 0 && choice > _player.GetItemNames().Length)
             {
 
-                Console.WriteLine("You used a health potion!");
-                return;
+                if (_player.GetItemNames()[choice] == "Health Potion" && _player.TryEquipItem(choice) )
+                {
+                    Console.WriteLine("You used a health potion!");
+                    Console.ReadKey(true);
+                    Console.Clear();
+                    return;
+                }
+                else if (_player.TryEquipItem(choice))
+                    Console.WriteLine($"You equipped the {_player.CurrentItem.Name}");
             }
-            else if (_player.TryEquipItem(choice))
-                Console.WriteLine($"You equipped the {_player.CurrentItem.Name}");
             else
             {
                 Console.WriteLine("You couldn't find that item in your bag.");
             }
+            Console.ReadKey(true);
+            Console.Clear();
+
         }
 
         private string[] GetShopMenuOptions()
@@ -531,6 +558,7 @@ namespace Text_Based_Adventure
             string[] playerItemNames = _player.GetItemNames();
             string[] shopItemClasses = _shop.GetItemClasses();
 
+            Console.WriteLine($"Your Health: {_player.Health}");
             Console.WriteLine($"Your gold: {_player.Gold}\n");
             Console.WriteLine("Your inventory:");
             for (int i = 0; i < playerItemNames.Length; i++)
