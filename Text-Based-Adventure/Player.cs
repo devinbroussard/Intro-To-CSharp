@@ -79,6 +79,16 @@ namespace Text_Based_Adventure
             if (index >= _inventory.Length || index < 0)
                 return false;
 
+            if (_inventory[index].equipType == ItemType.HEALING)
+            {
+                base.Heal(_inventory[index].StatBoost);
+
+                Item[] newInventory = new Item[_inventory.Length - 1];
+
+
+                return true;
+            }
+
             _currentItemIndex = index;
 
             _currentItem = _inventory[_currentItemIndex];
@@ -182,7 +192,7 @@ namespace Text_Based_Adventure
         {
             _gold += entity.RewardMoney;
 
-            return RewardMoney;
+            return entity.RewardMoney;
         }
     }
 }

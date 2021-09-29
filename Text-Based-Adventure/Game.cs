@@ -16,6 +16,9 @@ namespace Text_Based_Adventure
         private int _currentEnemyIndex;
         private Entity[] _enemies;
         private Shop _shop;
+        private int _currentFloorTextIndex;
+        private string[] _floorText = { "First", "Second", "Third", "Fourth", "Fifth and Final" };
+        Random rand = new Random();
 
         //Defining arrays containing entity/shop items
         private Item[] _knightItems;
@@ -49,8 +52,8 @@ namespace Text_Based_Adventure
         private void Start()
         {
             _gameOver = false;
+            _currentFloorTextIndex = 0;
             _currentScene = Scene.STARTMENU;
-
             InitializeEnemies();
             InitializeItems();
         }
@@ -123,9 +126,14 @@ namespace Text_Based_Adventure
 
             if (choice == 0)
             {
-                Console.WriteLine("You advance to the next floor...");
+                Console.WriteLine($"You enter the {_floorText[_currentFloorTextIndex]} floor.");
+                _currentFloorTextIndex++;
+
+
+                Console.WriteLine($"You run in to a {_currentEnemy.Name}!");
                 Console.ReadKey(true);
                 Console.Clear();
+
                 _currentScene = Scene.BATTLE;
             }
 
@@ -217,10 +225,17 @@ namespace Text_Based_Adventure
         {
             Entity slime = new Entity("Slime", 10, 10, 25);
             Entity skeleton = new Entity("Skeleton", 30, 20, 55);
-            Entity darkKnight = new Entity("Dark Knight", 50, 50, 80);
 
-            _enemies = new Entity[] { slime, skeleton, darkKnight };
+            Entity cursedMannequin = new Entity("Cursed Mannequin", 30, 75, 150);
+            Entity darkKnight = new Entity("Dark Knight", 50, 40, 100);
+
+            Entity bossSideKick = new Entity("Boss' Side Kick", 75, 50, 200);
+
+
+
+
             _currentEnemyIndex = 0;
+            _enemies = new Entity[] { slime, skeleton, cursedMannequin, darkKnight, bossSideKick };
             _currentEnemy = _enemies[_currentEnemyIndex];
         }
 
@@ -360,10 +375,6 @@ namespace Text_Based_Adventure
         /// </summary>
         private void DisplayBattle()
         {
-            Console.WriteLine($"You run in to a {_currentEnemy.Name}!");
-            Console.ReadKey(true);
-            Console.Clear();
-
             DisplayStats(_player);
             DisplayStats(_currentEnemy);
 
@@ -428,6 +439,7 @@ namespace Text_Based_Adventure
             else if (_currentEnemy.Health == 0)
             {
                 Console.WriteLine($"You slayed the {_currentEnemy.Name} and collected {_player.GetRewardMoney(_currentEnemy)} gold!");
+                Console.WriteLine($"Current Gold: {_player.Gold}");
                 Console.ReadKey(true);
                 Console.Clear();
                 _currentEnemyIndex++;

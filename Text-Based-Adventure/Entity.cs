@@ -79,13 +79,23 @@ namespace Text_Based_Adventure
         /// <returns>Damage taken</returns>
         public float TakeDamage(float damageAmount)
         {
-            float damageTaken = damageAmount * (100 - _defensePower) / 100;
+            float damageTaken = damageAmount * (100 - DefensePower) / 100;
 
             _health -= damageTaken;
 
             if (_health < 0) _health = 0;
 
             return damageTaken;
+        }
+
+        public float Heal(float healAmount)
+        {
+            _health += healAmount;
+
+            if (_health > 100)
+                _health = 100;
+
+            return healAmount;
         }
 
         /// <summary>
@@ -95,7 +105,7 @@ namespace Text_Based_Adventure
         /// <returns>The damage calculated by the enemy's TakeDamage function</returns>
         public float Attack(Entity defender)
         {
-            return defender.TakeDamage(_attackPower);
+            return defender.TakeDamage(AttackPower);
         }
 
         /// <summary>
