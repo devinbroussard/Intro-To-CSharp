@@ -201,12 +201,12 @@ namespace Text_Based_Adventure
         {
             //Shop items
             Item healthPotion = new Item { Name = "Health Potion", StatBoost = 50, equipType = ItemType.HEALING, Cost = 50 };
-            Item ironShield = new Item { Name = "Iron Shield", StatBoost = 60, equipType = ItemType.DEFENSE, Cost = 200, classType = PlayerClass.KNIGHT };
+            Item ironShield = new Item { Name = "Iron Shield", StatBoost = 40, equipType = ItemType.DEFENSE, Cost = 200, classType = PlayerClass.KNIGHT };
             Item longDagger = new Item { Name = "Long Dagger", StatBoost = 60, equipType = ItemType.ATTACK, Cost = 200, classType = PlayerClass.ASSASSIN };
             Item enchantedWand = new Item { Name = "Enchanted Wand", StatBoost = 75, equipType = ItemType.ATTACK, Cost = 200, classType = PlayerClass.WIZARD };
 
             //Items for the knight class
-            Item woodenShield = new Item { Name = "Wooden Shield", StatBoost = 40, equipType = ItemType.DEFENSE, Cost = 50 };
+            Item woodenShield = new Item { Name = "Wooden Shield", StatBoost = 30, equipType = ItemType.DEFENSE, Cost = 50 };
 
             //Items for the assassin class
             Item shortDagger = new Item { Name = "Short Dagger", StatBoost = 40, equipType = ItemType.ATTACK, Cost = 50 };
@@ -228,10 +228,10 @@ namespace Text_Based_Adventure
         /// </summary>
         private void InitializeEnemies()
         {
-            Entity slime = new Entity("Slime", 10, 10, 25);
-            Entity skeleton = new Entity("Skeleton", 30, 20, 55);
-            Entity cursedMannequin = new Entity("Cursed Mannequin", 20, 75, 150);
-            Entity darkKnight = new Entity("Dark Knight", 60, 20, 100);
+            Entity slime = new Entity("Slime", 10, 10, 50);
+            Entity skeleton = new Entity("Skeleton", 30, 20, 75);
+            Entity cursedMannequin = new Entity("Cursed Mannequin", 20, 100, 150);
+            Entity darkKnight = new Entity("Dark Knight", 60, 20, 150);
             Entity finalBoss = new Entity("Final Boss", 95, 30, 1000);
 
 
@@ -624,6 +624,7 @@ namespace Text_Based_Adventure
             if (choice == 1)
             {
                 InitializeEnemies();
+                _currentFloorTextIndex = 0;
                 _currentScene = 0;
             }
 
