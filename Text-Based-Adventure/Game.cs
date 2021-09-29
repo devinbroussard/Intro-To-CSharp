@@ -89,11 +89,11 @@ namespace Text_Based_Adventure
                     GetPlayerClass();
                     break;
                 case Scene.BATTLE:
-                    Battle();
+                    DisplayBattle();
                     CheckBattleResults();
                     break;
                 case Scene.BETWEENBATTLES:
-
+                    DisplayBetweenBattles();
                     break;
                 case Scene.SHOP:
                     DisplayShopMenu();
@@ -117,9 +117,25 @@ namespace Text_Based_Adventure
                 Load();
         }
 
-        private void DisplayBetweenBattlesScene()
+        private void DisplayBetweenBattles()
         {
-            
+            int choice = GetInput("What would you like to do?", "Go to the next floor", "Go to the shop", "Save Game", "Quit Game");
+
+            if (choice == 0)
+            {
+                Console.WriteLine("You advance to the next floor...");
+                Console.ReadKey(true);
+                Console.Clear();
+                _currentScene = Scene.BATTLE;
+            }
+
+            if (choice == 1)
+            {
+                Console.WriteLine("You decide to head to the shop");
+                Console.ReadKey(true);
+                Console.Clear();
+                _currentScene = Scene.SHOP;
+            }
         }
 
         private void DisplayEntranceScene()
@@ -162,12 +178,7 @@ namespace Text_Based_Adventure
             else if (choice == 2)
                 _player = new Player(_playerName, 100, 40, 20, _assassinItems, PlayerClass.ASSASSIN);
 
-            _currentScene = Scene.BATTLE;
-        }
-
-        private void DisplayBetweenBattle()
-        {
-            //Not finished
+            _currentScene = Scene.ENTRANCE;
         }
 
         /// <summary>
@@ -347,12 +358,16 @@ namespace Text_Based_Adventure
         /// <summary>
         /// Function used to start a battle between the player and the current enemy
         /// </summary>
-        private void Battle()
+        private void DisplayBattle()
         {
+            Console.WriteLine($"You run in to a {_currentEnemy.Name}!");
+            Console.ReadKey(true);
+            Console.Clear();
+
             DisplayStats(_player);
             DisplayStats(_currentEnemy);
 
-            int choice = GetInput($"A {_currentEnemy.Name} stands in front of you! What will you do:", "Attack", "Equip Item", "Remove current Item", "Save Game");
+            int choice = GetInput($"A {_currentEnemy.Name} stands in front of you! What will you do:", "Attack", "Equip Item", "Remove current Item", "Save Game", "Quit Game");
 
             Console.Clear();
 
@@ -384,6 +399,13 @@ namespace Text_Based_Adventure
                 Save();
                 Console.WriteLine("Game saved successfully!");
             }
+
+            else if (choice == 4)
+            {
+                _gameOver = true;
+                return;
+            }
+
             Console.ReadKey(true);
             Console.Clear();
         }
@@ -400,35 +422,49 @@ namespace Text_Based_Adventure
                 Console.ReadKey(true);
                 Console.Clear();
 
-                //Put restart menu here
+                _currentScene = Scene.RESTARTMENU;
             }
 
             else if (_currentEnemy.Health == 0)
             {
-                Console.WriteLine($"You slayed the {_currentEnemy.Name}!");
+                Console.WriteLine($"You slayed the {_currentEnemy.Name} and collected {_player.GetRewardMoney(_currentEnemy)} gold!");
                 Console.ReadKey(true);
                 Console.Clear();
                 _currentEnemyIndex++;
 
-                //Not finished
+                if (TryEndGame())
+                    return;
+
+                _currentEnemy = _enemies[_currentEnemyIndex];
+
+                _currentScene = Scene.BETWEENBATTLES;
             }
         }
         
-
-        private bool TryFinalBoss()
+        private bool TryEndGame()
         {
-            bool fightBoss = _currentEnemyIndex >= _enemies.Length;
+            bool gameOver = _currentEnemyIndex >= _enemies.Length;
+            bool fightBoss = _currentEnemyIndex == _enemies.Length - 1;
+
+            if (gameOver)
+            {
+                Console.WriteLine("Congradulations, you have made it to the top of the tower! You are the best!");
+                Console.ReadKey(true);
+                Console.Clear();
+
+                _currentScene = Scene.RESTARTMENU;
+            }
 
             if (fightBoss)
             {
-                Console.WriteLine("You have reached the highest floor. The final boss awaits on the roof");
-                int choice = GetInput("What would you like to do?", "Fight more enemies outside (You can come back later)", "Go to the shop", "Fight the boss");
+                Console.WriteLine("You have reached the second highest floor. The final boss awaits you.");
+                Console.ReadKey(true);
+                Console.Clear();
 
-                //plug different choices here
-
+                _currentScene = Scene.BETWEENBATTLES;
             }
 
-            return fightBoss;
+            return gameOver;
         }
         /// <summary>
         /// Allows the player to select an item to equip out of the player inventory
@@ -446,15 +482,16 @@ namespace Text_Based_Adventure
         private string[] GetShopMenuOptions()
         {
             string[] shopItems = _shop.GetItemNames();
-            string[] menuOptions = new string[shopItems.Length + 2];
+            string[] menuOptions = new string[shopItems.Length + 3];
 
             for (int i = 0; i < shopItems.Length; i++)
             {
                 menuOptions[i] = shopItems[i];
             }
 
-            menuOptions[shopItems.Length] = "Save Game";
-            menuOptions[shopItems.Length + 1] = "Quit Game";
+            menuOptions[shopItems.Length] = "Leave Shop";
+            menuOptions[shopItems.Length + 1] = "Save Game";
+            menuOptions[shopItems.Length + 2] = "Quit Game";
 
             return menuOptions;
         }
@@ -474,7 +511,7 @@ namespace Text_Based_Adventure
 
             int inputReceived = GetInput("What would you like to purchase?", GetShopMenuOptions());
 
-            if (inputReceived >= 0 && inputReceived < GetShopMenuOptions().Length - 2)
+            if (inputReceived >= 0 && inputReceived < GetShopMenuOptions().Length - 3)
             {
                 if (_shop.Sell(_player, inputReceived))
                 {
@@ -492,6 +529,15 @@ namespace Text_Based_Adventure
                 }
             }
 
+            if (inputReceived == GetShopMenuOptions().Length - 3)
+            {
+                Console.WriteLine("You leave the shop...");
+                Console.ReadKey(true);
+                Console.Clear();
+
+                _currentScene = Scene.BETWEENBATTLES;
+            }
+
             if (inputReceived == GetShopMenuOptions().Length - 2)
             {
                 Console.Clear();
@@ -507,6 +553,26 @@ namespace Text_Based_Adventure
                 _gameOver = true;
             }
 
+        }
+        
+        private void DisplayRestartMenu()
+        {
+            int choice = GetInput("The game is over. What would you like to do?", "Load Game", "Quit Game");
+
+            if (choice == 0)
+            {
+                if (!Load())
+                {
+                    Console.WriteLine("Load failed!");
+                    Console.ReadKey(true);
+                    Console.Clear();
+                }
+            }
+
+            if (choice == 1)
+            {
+                _gameOver = true;
+            }
         }
     }
 }

@@ -177,5 +177,12 @@ namespace Text_Based_Adventure
 
             _inventory = newInventory;
         }
+
+        public int GetRewardMoney(Entity entity)
+        {
+            _gold += entity.RewardMoney;
+
+            return RewardMoney;
+        }
     }
 }

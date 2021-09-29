@@ -30,6 +30,6 @@ namespace Text_Based_Adventure
     /// <summary>
     /// Enum created to label the different game scenes
     /// </summary>
-    public enum Scene { STARTMENU, GETPLAYERNAME, GETPLAYERCLASS, BATTLE, ENTRANCE, SHOP, BETWEENBATTLES }
+    public enum Scene { STARTMENU, GETPLAYERNAME, GETPLAYERCLASS, BATTLE, ENTRANCE, SHOP, BETWEENBATTLES, RESTARTMENU }
 
 }

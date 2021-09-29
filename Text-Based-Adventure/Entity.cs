@@ -24,6 +24,11 @@ namespace Text_Based_Adventure
             get { return _health; }
         }
 
+        public int RewardMoney
+        {
+            get { return _rewardMoney; }
+        }
+
         //Creating virtual properties that can be overwritten byclasses that inherit
         public virtual float AttackPower
         {
