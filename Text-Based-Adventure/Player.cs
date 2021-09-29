@@ -51,11 +51,12 @@ namespace Text_Based_Adventure
         }
 
         //Constructors called when player is instantiated
-        public Player(string name, float health, float attackPower, float defensePower, Item[] inventory, PlayerClass job) : base(name, health, attackPower, defensePower)
+        public Player(string name, float health, float attackPower, float defensePower, Item[] inventory, PlayerClass job, int gold) : base(name, health, attackPower, defensePower)
         {
             _inventory = inventory;
             _currentItem.Name = "Nothing";
             _job = job;
+            _gold = gold;
         }
         public Player(Item[] inventory)
         {
@@ -85,7 +86,17 @@ namespace Text_Based_Adventure
 
                 Item[] newInventory = new Item[_inventory.Length - 1];
 
+                for (int i = 0; i < index; i++)
+                {
+                        newInventory[i] = _inventory[i];
+                }
 
+                for (int i = index + 1; i < _inventory.Length - 1; i++)
+                {
+                    newInventory[i] = _inventory[i + 1];
+                }
+
+                _inventory = newInventory;
                 return true;
             }
 
@@ -181,7 +192,7 @@ namespace Text_Based_Adventure
             Item[] newInventory = new Item[_inventory.Length + 1];
 
             for (int i = 0; i < _inventory.Length; i++)
-                newInventory[_inventory.Length] = item;
+                newInventory[i] = _inventory[i];
 
             newInventory[_inventory.Length] = item;
 

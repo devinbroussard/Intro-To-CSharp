@@ -180,11 +180,11 @@ namespace Text_Based_Adventure
             int choice = GetInput($"Okay {_playerName}, select a class:", "Knight", "Wizard", "Assassin");
 
             if (choice == 0)
-                _player = new Player(_playerName, 100, 20, 40, _knightItems, PlayerClass.KNIGHT);
+                _player = new Player(_playerName, 100, 20, 40, _knightItems, PlayerClass.KNIGHT, 2000);
             else if (choice == 1)
-                _player = new Player(_playerName, 100, 60, 0, _wizardItems, PlayerClass.WIZARD);
+                _player = new Player(_playerName, 100, 60, 0, _wizardItems, PlayerClass.WIZARD, 2000);
             else if (choice == 2)
-                _player = new Player(_playerName, 100, 40, 20, _assassinItems, PlayerClass.ASSASSIN);
+                _player = new Player(_playerName, 100, 40, 20, _assassinItems, PlayerClass.ASSASSIN, 2000);
 
             _currentScene = Scene.ENTRANCE;
         }
@@ -196,9 +196,9 @@ namespace Text_Based_Adventure
         {
             //Shop items
             Item healthPotion = new Item { Name = "Health Potion", StatBoost = 50, equipType = ItemType.HEALING, Cost = 50 };
-            Item ironShield = new Item { Name = "Iron Shield", StatBoost = 60, equipType = ItemType.DEFENSE, Cost = 200 };
-            Item longDagger = new Item { Name = "Long Dagger", StatBoost = 60, equipType = ItemType.ATTACK, Cost = 200 };
-            Item enchantedWand = new Item { Name = "Enchanted Wand", StatBoost = 75, equipType = ItemType.ATTACK, Cost = 200 };
+            Item ironShield = new Item { Name = "Iron Shield", StatBoost = 60, equipType = ItemType.DEFENSE, Cost = 200, classType = PlayerClass.KNIGHT };
+            Item longDagger = new Item { Name = "Long Dagger", StatBoost = 60, equipType = ItemType.ATTACK, Cost = 200, classType = PlayerClass.ASSASSIN };
+            Item enchantedWand = new Item { Name = "Enchanted Wand", StatBoost = 75, equipType = ItemType.ATTACK, Cost = 200, classType = PlayerClass.WIZARD };
 
             //Items for the knight class
             Item woodenShield = new Item { Name = "Wooden Shield", StatBoost = 40, equipType = ItemType.DEFENSE, Cost = 50 };
@@ -213,7 +213,7 @@ namespace Text_Based_Adventure
             _knightItems = new Item[] { woodenShield };
             _assassinItems = new Item[] { shortDagger };
             _wizardItems = new Item[] { basicWand };
-            _shopItems = new Item[] { healthPotion, ironShield, longDagger, enchantedWand };
+            _shopItems = new Item[] {ironShield, longDagger, enchantedWand, healthPotion };
 
             _shop = new Shop(_shopItems);
         }
@@ -511,6 +511,7 @@ namespace Text_Based_Adventure
         private void DisplayShopMenu()
         {
             string[] playerItemNames = _player.GetItemNames();
+            string[] shopItemClasses = _shop.GetItemClasses();
 
             Console.WriteLine($"Your gold: {_player.Gold}\n");
             Console.WriteLine("Your inventory:");
@@ -521,27 +522,47 @@ namespace Text_Based_Adventure
             Console.WriteLine();
 
 
-            int inputReceived = GetInput("What would you like to purchase?", GetShopMenuOptions());
+            int choice = GetInput("What would you like to purchase?", GetShopMenuOptions());
 
-            if (inputReceived >= 0 && inputReceived < GetShopMenuOptions().Length - 3)
+
+            if (choice >= 3 && choice < GetShopMenuOptions().Length - 3)
             {
-                if (_shop.Sell(_player, inputReceived))
+                if (_shop.Sell(_player, choice))
                 {
                     Console.Clear();
-                    Console.WriteLine($"You purchased the {_shop.GetItemNames()[inputReceived]}!");
-                    Console.ReadKey();
-                    Console.Clear();
+                    Console.WriteLine($"You purchased the {_shop.GetItemNames()[choice]}!");
                 }
                 else
                 {
                     Console.Clear();
                     Console.WriteLine("You don't have enough gold for that.");
-                    Console.ReadKey(true);
-                    Console.Clear();
                 }
             }
 
-            if (inputReceived == GetShopMenuOptions().Length - 3)
+
+            else if (choice >= 0 && choice < GetShopMenuOptions().Length - 3)
+            {
+                if (shopItemClasses[choice] == $"{_player.Job}")
+                {
+                    if (_shop.Sell(_player, choice))
+                    {
+                        Console.Clear();
+                        Console.WriteLine($"You purchased the {_shop.GetItemNames()[choice]}!");
+                    }
+                    else
+                    {
+                        Console.Clear();
+                        Console.WriteLine("You don't have enough gold for that.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"You would have to be a {shopItemClasses[choice]} to use that...");
+                }
+
+            }
+
+            else if (choice == GetShopMenuOptions().Length - 3)
             {
                 Console.WriteLine("You leave the shop...");
                 Console.ReadKey(true);
@@ -550,21 +571,21 @@ namespace Text_Based_Adventure
                 _currentScene = Scene.BETWEENBATTLES;
             }
 
-            if (inputReceived == GetShopMenuOptions().Length - 2)
+            else if (choice == GetShopMenuOptions().Length - 2)
             {
                 Console.Clear();
                 Save();
 
                 Console.WriteLine("Game saved successfully!");
-                Console.ReadKey(true);
-                Console.Clear();
 
             }
-            if (inputReceived == GetShopMenuOptions().Length - 1)
+            else if (choice == GetShopMenuOptions().Length - 1)
             {
                 _gameOver = true;
             }
 
+            Console.ReadKey(true);
+            Console.Clear();
         }
         
         private void DisplayRestartMenu()

@@ -36,5 +36,15 @@ namespace Text_Based_Adventure
 
             return itemNames;
         }
+
+        public string[] GetItemClasses()
+        {
+            string[] itemClasses = new string[_inventory.Length];
+
+            for (int i = 0; i < _inventory.Length; i++)
+                itemClasses[i] = $"{_inventory[i].classType}";
+
+            return itemClasses;
+        }
     }
 }
