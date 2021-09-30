@@ -514,7 +514,7 @@ namespace Text_Based_Adventure
         {
             int choice = GetInput("Select an item to equip.", _player.GetItemNames());
 
-            if (choice <= 0 && choice > _player.GetItemNames().Length)
+            if (choice >= 0 && choice < _player.GetItemNames().Length)
             {
 
                 if (_player.GetItemNames()[choice] == "Health Potion" && _player.TryEquipItem(choice) )
@@ -577,7 +577,6 @@ namespace Text_Based_Adventure
                 if (_shop.Sell(_player, choice))
                 {
                     Console.WriteLine($"You purchased the {_shop.GetItemNames()[choice]}!");
-                    Console.ReadKey(true);
                 }
                 else
                 {
@@ -606,8 +605,11 @@ namespace Text_Based_Adventure
                 }
                 else
                 {
+                   
                     Console.WriteLine($"You would have to be a {shopItemClasses[choice]} to use that...");
                 }
+                Console.ReadKey(true);
+                Console.Clear();
 
             }
 
