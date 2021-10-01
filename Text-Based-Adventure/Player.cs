@@ -64,65 +64,87 @@ namespace Text_Based_Adventure
             get { return _gold; }
         }
 
-        //Constructors called when player is instantiated
+        /// <summary>
+        /// Construcotr called to give the player stats, an inventory, and a class
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="health"></param>
+        /// <param name="attackPower"></param>
+        /// <param name="defensePower"></param>
+        /// <param name="inventory"></param>
+        /// <param name="job"></param>
         public Player(string name, float health, float attackPower, float defensePower, Item[] inventory, PlayerClass job) : base(name, health, attackPower, defensePower)
         {
             _inventory = inventory;
             _currentItem.Name = "Nothing";
             _job = job;
             _gold = 50;
+            _currentItemIndex = -1;
         }
+        /// <summary>
+        /// Constructor called to create an instance of the player when loading so that other stats can be loaded
+        /// </summary>
+        /// <param name="inventory"></param>
         public Player(Item[] inventory)
         {
+            //Sets the current item to be nothing, and the inventory to be the one given in the parameters list 
             _currentItem.Name = "Nothing";
             _inventory = inventory;
-        }
-
-        public Player()
-        {
-            _inventory = new Item[0];
-            _currentItem.Name = "Nothing";
         }
 
         /// <summary>
         /// Tries to equip item at the given index of the _items array
         /// </summary>
-        /// <param name="index"></param>
+        /// <param name="itemIndex"></param>
         /// <returns>False if the index is outside the bounds of the array</returns>
-        public bool TryEquipItem(int index)
+        public bool TryEquipItem(int itemIndex)
         {
-            if (index >= _inventory.Length || index < 0)
+            //If the given index is outside of the array...
+            if (itemIndex >= _inventory.Length || itemIndex < 0)
+                //..return false
                 return false;
 
-            if (_inventory[index].equipType == ItemType.HEALING)
+
+            //If the item at the given index is that of the healing type...
+            else if (_inventory[itemIndex].equipType == ItemType.HEALING)
             {
+                //Creating a variable to store the current item
                 Item currentItem = _currentItem;
 
-                base.Heal(_inventory[index].StatBoost);
+                //Use the base entity's heal function and pass in the healing item selected's statboost
+                base.Heal(_inventory[itemIndex].StatBoost);
 
-
+                //Creates a new inventory that is one element smaller than the previous so that the healing item can be removed
                 Item[] newInventory = new Item[_inventory.Length - 1];
 
-                for (int i = 0; i < index; i++)
+                //For each index up until the itemIndex that was used, set the new inventory equal to the old one
+                for (int i = 0; i < itemIndex; i++)
                 {
                     newInventory[i] = _inventory[i];
                 }
 
-                for (int i = index; i < _inventory.Length - 1; i++)
+                //For every index after the itemIndex, set the newInventory to be equal to the previous one, skipping the used item
+                for (int i = itemIndex; i < _inventory.Length - 1; i++)
                 {
                     newInventory[i] = _inventory[i + 1];
                 }
 
+                //Set the player inventory equal to the new inventory
                 _inventory = newInventory;
+                //Set the current item back to the one stored in the beginning
                 _currentItem = currentItem;
 
+                //returns true because the equip was successful
                 return true;
             }
 
-            _currentItemIndex = index;
+            //Set the currentItemIndex to be the one given by the player
+            _currentItemIndex = itemIndex;
 
+            //Sets the current item to be the one selected by the player
             _currentItem = _inventory[_currentItemIndex];
 
+            //returns true of the equip was succesful
             return true;
         }
 
@@ -132,40 +154,56 @@ namespace Text_Based_Adventure
         /// <returns>False if there is no item equipped</returns>
         public bool TryRemoveCurrentItem()
         {
+            //If the current item's name is nothing, return false
             if (_currentItem.Name == "Nothing")
                 return false;
 
+            //sets the current item index to be -1
             _currentItemIndex = -1;
 
+            //Creates a new blank item that will because the current item
             _currentItem = new Item();
             _currentItem.Name = "Nothing";
 
+            //return true unless the player had no item equipped
             return true;
         }
 
         /// <returns>Get the name of all items in the player inventory</returns>
         public string[] GetItemNames()
         {
+            //Creates a new string array equal to the inventory length
             string[] itemNames = new string[_inventory.Length];
 
+            //For each item in the inventory..
             for (int i = 0; i < _inventory.Length; i++)
             {
+                //Set the itemNames array to match the name of the item in the inventory array
                 itemNames[i] = _inventory[i].Name;
             }
 
+            //return the new string array of names
             return itemNames;
         }
 
+        /// <summary>
+        /// Function called to save the player's stats 
+        /// </summary>
+        /// <param name="writer"></param>
         public override void Save(StreamWriter writer)
         {
+            //Writes down the player's job 
             writer.WriteLine(_job);
+            //writes down the stats from the base entity's save file
             base.Save(writer);
+            //write down the player's current item index
             writer.WriteLine(_currentItemIndex);
-
+            //writes down the player's gold
             writer.WriteLine(_gold);
+            //writes down the player's inventory length
             writer.WriteLine(_inventory.Length);
 
-
+            //writes down the stats of the items in the player's inventory
             for (int i = 0; i < _inventory.Length; i++)
             {
                 writer.WriteLine(_inventory[i].Name);
@@ -175,17 +213,24 @@ namespace Text_Based_Adventure
             }
         }
 
+        /// <summary>
+        /// Function called the load the player's stats
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <returns>true or false depending on if the load was succesful</returns>
         public override bool Load(StreamReader reader)
         {
-            int inventoryLength;
-
+            //If the base load of the player worked...
             if (!base.Load(reader))
                 return false;
+            //IF the current i
             if (!int.TryParse(reader.ReadLine(), out _currentItemIndex))
                 return false;
+
+
             if (!int.TryParse(reader.ReadLine(), out _gold))
                 return false;
-            if (!int.TryParse(reader.ReadLine(), out inventoryLength))
+            if (!int.TryParse(reader.ReadLine(), out int inventoryLength))
                 return false;
 
             _inventory = new Item[inventoryLength];
