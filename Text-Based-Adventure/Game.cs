@@ -16,12 +16,16 @@ namespace Text_Based_Adventure
         private Scene _currentScene;
         //Holds the current enemy;
         private Entity _currentEnemy;
+        //Holds the index of the current enemy in the _enemies array
         private int _currentEnemyIndex;
+        //Holds all of the enemies
         private Entity[] _enemies;
+        //Defining the shop
         private Shop _shop;
+        //Holds the current floor, used for the _floorText array
         private int _currentFloorTextIndex;
+        //Holds the text that tells players what floor they are entering
         private string[] _floorText = { "First", "Second", "Third", "Fourth", "Fifth and Final" };
-        Random rand = new Random();
 
         //Defining arrays containing entity/shop items
         private Item[] _knightItems;
@@ -29,7 +33,8 @@ namespace Text_Based_Adventure
         private Item[] _wizardItems;
         private Item[] _shopItems;
 
-        //Defining player entity
+
+        //Defining player
         Player _player;
 
         /// <summary>
@@ -54,6 +59,7 @@ namespace Text_Based_Adventure
         /// </summary>
         private void Start()
         {
+            //Initializing variables, enemies, and items
             _gameOver = false;
             _currentFloorTextIndex = 0;
             _currentScene = Scene.STARTMENU;
@@ -61,25 +67,31 @@ namespace Text_Based_Adventure
             InitializeItems();
         }
 
-        //Function that is continiously called until the game is over
+        /// <summary>
+        /// Function that is continiously called until the game is over
+        /// </summary>
         private void Update()
         {
+            //Displays the current scene
             DisplayCurrentScene();
         }
 
-        //Function that is called at the end of the program;
+        /// <summary>
+        /// Function that is called at the end of the program
+        /// </summary>
         private void End()
         {
+            //A goodbye message for the player
             Console.WriteLine("Goodbye, player!");
-
             Console.ReadKey(true);
         }
 
         /// <summary>
-        /// Called to display a current scene
+        /// Called to display a current scene, can be updated with the _currentScene variable
         /// </summary>
         void DisplayCurrentScene()
         {
+            //Switch statement that changes the display based on the current scene variable
             switch (_currentScene)
             {
                 case Scene.STARTMENU:
@@ -116,62 +128,87 @@ namespace Text_Based_Adventure
         /// </summary>
         void DisplayStartMenu()
         {
+            //Asks and gets the player's input on if they want to start a new game, or load
             Console.WriteLine("Hello player! In this game you will fight enemies to reach the top of a tower!");
             int choice = GetInput("Would you like to start a new game, or load an existing save file?", "Start new game", "Load existing game");
 
+            //Transitions to the next scene if they want to start a new game
             if (choice == 0)
                 _currentScene = Scene.GETPLAYERNAME;
 
+            //Loads the game if they want to load
             if (choice == 1)
                 Load();
         }
 
+        /// <summary>
+        /// Asks the player what they would like to do between battles
+        /// </summary>
         private void DisplayBetweenBattles()
         {
+            //Gets the player input on what they want to do
             int choice = GetInput("What would you like to do?", "Go to the next floor", "Go to the shop", "Save Game", "Quit Game");
 
+            //If they want to go to the next floor..
             if (choice == 0)
             {
+                //Tell the player what floor they are going to...
                 Console.WriteLine($"You enter the {_floorText[_currentFloorTextIndex]} floor.\n");
+                //...Change the current floor 
                 _currentFloorTextIndex++;
 
-
+                //...Tell the player what enemy they are fighting...
                 Console.WriteLine($"You run in to a {_currentEnemy.Name}!");
                 Console.ReadKey(true);
                 Console.Clear();
 
+                //Change the game to the battle scene
                 _currentScene = Scene.BATTLE;
             }
 
+            //If they want to go to the shop...
             if (choice == 1)
             {
+                //...Tell the player they are going to the shop
                 Console.WriteLine("You decide to head to the shop");
                 Console.ReadKey(true);
                 Console.Clear();
+                //...and change the current scene to the shop scene
                 _currentScene = Scene.SHOP;
             }
 
+            //If they want to save the game...
             else if (choice == 2)
             {
+                //Call the save function...
                 Save();
 
+                //...And tell the player they changed the game
                 Console.WriteLine("Game saved successfully!");
                 Console.ReadKey(true);
                 Console.Clear();
 
             }
+
+            //If they want to quit the game...
             else if (choice == 3)
             {
+                //Change the gameover variable to true, ending the while loop in the update function
                 _gameOver = true;
             }
         }
 
+        /// <summary>
+        /// Transitions from the welcome menu into the game
+        /// </summary>
         private void DisplayEntranceScene()
         {
+            //Tells the player that there is a shop near the front entrance, and that they are in front of the tower
             Console.WriteLine("You approach the tower and notice there is a shop near the front entrance...");
             Console.ReadKey(true);
             Console.Clear();
 
+            //Sets the current scene to the between battles scene, where the player can select what they want to do next
             _currentScene = Scene.BETWEENBATTLES;
         }
 
@@ -180,15 +217,20 @@ namespace Text_Based_Adventure
         /// </summary>
         void GetPlayerName()
         {
+            //Asks and gets the player's name
             Console.Clear();
             Console.WriteLine("Please enter your name:");
             Console.Write("> ");
             _playerName = Console.ReadLine();
 
+            //Asks the player to confirm their name
             int choice = GetInput($"\nAre you sure {_playerName} is your name?", "Yes", "No");
-
+            
+            //If their choice is yes, then progresses to the next scene
             if (choice == 0)
                 _currentScene = Scene.GETPLAYERCLASS;
+
+            //If the choice is no, the while loop will cause the scene to restart, asking for their name again
         }
 
         /// <summary>
@@ -196,8 +238,10 @@ namespace Text_Based_Adventure
         /// </summary>
         private void GetPlayerClass()
         {
+            //Asks and gets the player input on which class they want to play
             int choice = GetInput($"Okay {_playerName}, select a class:", "Knight", "Wizard", "Assassin");
 
+            //Creates a new instance of the player with stats according that of which the player selects
             if (choice == 0)
                 _player = new Player(_playerName, 100, 25, 50,  _knightItems, PlayerClass.KNIGHT);
             else if (choice == 1)
@@ -213,27 +257,24 @@ namespace Text_Based_Adventure
         /// </summary>
         private void InitializeItems()
         {
-            //Shop items
+            //Initializing shop items that can be sold to the player
             Item healthPotion = new Item { Name = "Health Potion", StatBoost = 50, equipType = ItemType.HEALING, Cost = 50 };
             Item ironShield = new Item { Name = "Iron Shield", StatBoost = 40, equipType = ItemType.DEFENSE, Cost = 200, classType = PlayerClass.KNIGHT };
             Item longDagger = new Item { Name = "Long Dagger", StatBoost = 60, equipType = ItemType.ATTACK, Cost = 200, classType = PlayerClass.ASSASSIN };
             Item enchantedWand = new Item { Name = "Enchanted Wand", StatBoost = 75, equipType = ItemType.ATTACK, Cost = 200, classType = PlayerClass.WIZARD };
 
-            //Items for the knight class
+            //Initializing start item for the knight, assassin, and wizard class, respectively
             Item woodenShield = new Item { Name = "Wooden Shield", StatBoost = 30, equipType = ItemType.DEFENSE, Cost = 50 };
-
-            //Items for the assassin class
             Item shortDagger = new Item { Name = "Short Dagger", StatBoost = 40, equipType = ItemType.ATTACK, Cost = 50 };
-
-            //Items for the wizard class
             Item basicWand = new Item { Name = "Basic Wand", StatBoost = 60, equipType = ItemType.ATTACK, Cost = 50 };
 
-            //Creating class-specific item arrays
+            //Defining the class-specific item arrays that allow for the items to be accessed anywhere in the game class
             _knightItems = new Item[] { woodenShield };
             _assassinItems = new Item[] { shortDagger };
             _wizardItems = new Item[] { basicWand };
             _shopItems = new Item[] {ironShield, longDagger, enchantedWand, healthPotion };
 
+            //Creates a new instance of the shop with the shop items initialized before
             _shop = new Shop(_shopItems);
         }
 
@@ -242,17 +283,18 @@ namespace Text_Based_Adventure
         /// </summary>
         private void InitializeEnemies()
         {
+            //Initializing enemies that will be fought later
             Entity slime = new Entity("Slime", 10, 10, 50);
             Entity skeleton = new Entity("Skeleton", 30, 20, 75);
             Entity cursedMannequin = new Entity("Cursed Mannequin", 20, 10, 150);
             Entity darkKnight = new Entity("Dark Knight", 60, 20, 150);
             Entity finalBoss = new Entity("Final Boss", 95, 30, 1000);
 
-
-
-
+            //Sets the current enemy index for the _enemies array to 0
             _currentEnemyIndex = 0;
+            //Stores the enemies in the _enemies arary so that they can be accessed anywhere in the game class
             _enemies = new Entity[] { slime, skeleton, cursedMannequin, darkKnight, finalBoss };
+            //sets the current enemy to be that of the currentEnemyIndex in the enemies array
             _currentEnemy = _enemies[_currentEnemyIndex];
         }
 
@@ -264,11 +306,14 @@ namespace Text_Based_Adventure
         /// <returns>int that represents the players choice</returns>
         private int GetInput(string description, params string[] options)
         {
-            string input = "";
-            int inputReceived = -1;
+            //Defining variables used in function
+            string input;
+            int inputReceived;
 
+            //Prints the question asked to the player
             Console.WriteLine($"{description}\n");
 
+            //Loops through the options available to the player and prints them
             for (int i = 0; i < options.Length; i++)
             {
                 Console.WriteLine($"{i + 1}. {options[i]}");
@@ -293,8 +338,10 @@ namespace Text_Based_Adventure
                     Console.ReadKey(true);
                 }
             }
+            //If the player didn't type an int
             else
             {
+                //tells the player that they gave invalid input and sets inputReceived to -1 so that the scene loops again
                 inputReceived = -1;
                 Console.WriteLine("\nInvalid input.");
                 Console.ReadKey(true);
@@ -306,7 +353,7 @@ namespace Text_Based_Adventure
         }
 
         /// <summary>
-        /// Displays the stats of an enemy
+        /// Overloaded fucntion that displays the stats of an enemy
         /// </summary>
         /// <param name="entity"></param>
         private void DisplayStats(Entity entity)
@@ -319,7 +366,7 @@ namespace Text_Based_Adventure
         }
 
         /// <summary>
-        /// Displays the stats of the player
+        /// Overloaded function that displays the stats of the player
         /// </summary>
         /// <param name="player"></param>
         private void DisplayStats(Player player)
@@ -346,7 +393,7 @@ namespace Text_Based_Adventure
             writer.WriteLine(_currentScene);
             writer.WriteLine(_currentFloorTextIndex);
 
-            //calls both of the 
+            //calls the save function from both the player and current enemy
             _player.Save(writer);
             _currentEnemy.Save(writer);
 
@@ -355,17 +402,21 @@ namespace Text_Based_Adventure
         }
 
         /// <summary>
-        /// Function used to call load functions from multiple enemies
+        /// Function used to load the game from the SaveData.txt file
         /// </summary>
         /// <returns>True if the load is successful</returns>
         private bool Load()
         {
-            //crating a variable we can easily return
+            //crating a variable we can easily return true or false
             bool loadSuccessful = true;
+            //defining a string to store the player class
             PlayerClass playerJob;
 
+            //creating a new StreamReader
             StreamReader reader = new StreamReader("SaveData.txt");
 
+            //Reads the current line in the SaveData.txt file, and tries to convert it to the required type.
+            //If false, changes the loadSuccessful variable to false, and if true, loads the variables data from the savefile
             if (!int.TryParse(reader.ReadLine(), out _currentEnemyIndex))
                 loadSuccessful = false;
             if (!Enum.TryParse<Scene>(reader.ReadLine(), out _currentScene))
@@ -373,24 +424,37 @@ namespace Text_Based_Adventure
             if (!int.TryParse(reader.ReadLine(), out _currentFloorTextIndex))
                 loadSuccessful = false;
 
-
+            //Does the same thing as the previous lines but outputs to the playerJob variable
             if (!Enum.TryParse<PlayerClass>(reader.ReadLine(), out playerJob))
-                loadSuccessful = false;
+                return false;
 
+            //Creates a new instance of the player and sets the player's job to be the data loaded into the playerJob variable
             if (playerJob == PlayerClass.KNIGHT)
+            {
                 _player = new Player(_knightItems);
+                _player.Job = PlayerClass.KNIGHT;
+            }
             else if (playerJob == PlayerClass.WIZARD)
+            {
                 _player = new Player(_wizardItems);
+                _player.Job = PlayerClass.WIZARD;
+            }
             else if (playerJob == PlayerClass.ASSASSIN)
+            {
                 _player = new Player(_assassinItems);
+                _player.Job = PlayerClass.ASSASSIN;
+            }
 
+            //Calls the load function of the player and current enemy, and changes loadSuccessful to false if they return false
             if (!_player.Load(reader))
                 loadSuccessful = false;
             if (!_currentEnemy.Load(reader))
                 loadSuccessful = false;
 
+            //Closes the reader
             reader.Close();
 
+            //returns the loadSuccessful variable, returns true unless one of the loads failed
             return loadSuccessful;
         }
 
@@ -399,15 +463,19 @@ namespace Text_Based_Adventure
         /// </summary>
         private void DisplayBattle()
         {
+            //Displays the stats of both the player, and the current enemy
             DisplayStats(_player);
             DisplayStats(_currentEnemy);
 
+            //Gets the players input on what they want to do, and returns that input in the form of an int
             int choice = GetInput($"A {_currentEnemy.Name} stands in front of you! What will you do:", "Attack", "Equip Item", "Remove current Item", "Save Game", "Quit Game");
 
             Console.Clear();
 
+            //If the player chose to attack...
             if (choice == 0)
             {
+                //..Calls the attack function from the player
                 float damage = _player.Attack(_currentEnemy);
                 Console.WriteLine($"You dealt {damage} damage!");
 
