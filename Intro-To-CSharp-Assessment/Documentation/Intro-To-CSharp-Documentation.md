@@ -21,7 +21,7 @@ Text Based Adventure Application
 
 # **II. Design** #
 >**1. System Archetecture:**
->> In this game, all gameplay is contained within the Game.cs file. 
+>> In this game, all gameplay is contained within the Game.cs file. This file creates instances of other objects from classes like the player class, the entity class, and the shop class. These classes only handle backend calculations. The Structs-Enumcs.cs file contains any structs or enums used in the application. 
 
 >**2. Object Information**  
 >> * **File:** Game.cs
