@@ -622,19 +622,24 @@ namespace Text_Based_Adventure
             //If the player's choice was in the acceptable range of the options...
             if (choice >= 0 && choice < _player.GetItemNames().Length)
             {
-                //If the player's choice was a health potion, and 
+                //If the player's choice was a health potion, and the equip item function return true,
                 if (_player.GetItemNames()[choice] == "Health Potion" && _player.TryEquipItem(choice) )
                 {
+                    //Tell the player they used a health potion
                     Console.WriteLine("You used a health potion!");
                     Console.ReadKey(true);
                     Console.Clear();
                     return;
                 }
+                //Else if the player didn't use a health potion, but the equip item function returned true,
                 else if (_player.TryEquipItem(choice))
+                    //Tell the player that they equipped the item they selected
                     Console.WriteLine($"You equipped the {_player.CurrentItem.Name}");
             }
+            //else if the player's choice wasn't in the list of items...
             else
             {
+                //...Tell the player that the item could not be found
                 Console.WriteLine("You couldn't find that item in your bag.");
             }
             Console.ReadKey(true);
@@ -642,50 +647,72 @@ namespace Text_Based_Adventure
 
         }
 
+        /// <summary>
+        /// Creates an array filled with the shop menu options
+        /// </summary>
+        /// <returns>An array filled with the names of the shop items, and the "leave shop", "save game", and "quit game" options at the end</returns>
         private string[] GetShopMenuOptions()
         {
+            //Creates a new array of the shop item names using the shop's GetItemNames function that returns a string array
             string[] shopItems = _shop.GetItemNames();
+            //Creates a new array that will be used for the menu options that is three slots longer so that the last three options will fit
             string[] menuOptions = new string[shopItems.Length + 3];
 
+            //For each slot in the menuOptions array up until the shopItems length...
             for (int i = 0; i < shopItems.Length; i++)
             {
+                //..Make the menuOptions equal to the shopItems names
                 menuOptions[i] = shopItems[i];
             }
 
+            //Adds the last three options at the end of the array
             menuOptions[shopItems.Length] = "Leave Shop";
             menuOptions[shopItems.Length + 1] = "Save Game";
             menuOptions[shopItems.Length + 2] = "Quit Game";
 
+            //Returns the array with the item names, and the last three options
             return menuOptions;
         }
 
+        /// <summary>
+        /// Function used for displaying the shop menu
+        /// </summary>
         private void DisplayShopMenu()
         {
+            //Gets the player's item names and stores them in an array using the player's getItemNames function
             string[] playerItemNames = _player.GetItemNames();
+            //Gets the class of the items in the shop inventory using the shop's GetItemClasses function
             string[] shopItemClasses = _shop.GetItemClasses();
 
+            //Displays the player's health, gold, and inventory
             Console.WriteLine($"Your Health: {_player.Health}");
             Console.WriteLine($"Your gold: {_player.Gold}\n");
             Console.WriteLine("Your inventory:");
+            //For each name in the player's item names...
             for (int i = 0; i < playerItemNames.Length; i++)
             {
+                //...Print the name of the item
                 Console.WriteLine(playerItemNames[i]);
             }
             Console.WriteLine();
 
-
+            //Asks the player what they would like to purchase and prints the shop options
             int choice = GetInput("What would you like to purchase?", GetShopMenuOptions());
 
-
+            //If the player's choice wasn't one of the class specific options or one of the non-item options...
             if (choice >= 3 && choice < GetShopMenuOptions().Length - 3)
             {
                 Console.Clear();
+                //..and if the player had enough gold for the itemm...
                 if (_shop.Sell(_player, choice))
                 {
+                    //Tell the player that they purchased their selected item
                     Console.WriteLine($"You purchased the {_shop.GetItemNames()[choice]}!");
                 }
+                //...otherwise if the player didn't have enough gold for the item
                 else
                 {
+                    //Tell the player that they didn't have enough gold
                     Console.WriteLine("You don't have enough gold for that.");
                 }
 
@@ -693,22 +720,27 @@ namespace Text_Based_Adventure
                 Console.Clear();
             }
 
-
+            //Otherwise if the choice was one of the class-specific items...
             else if (choice >= 0 && choice < GetShopMenuOptions().Length - 3)
             {
+                //...and if the player's class selected their player choice
                 if (shopItemClasses[choice] == $"{_player.Job}")
                 {
+                    //...and if the player had enough gold for the item...
                     if (_shop.Sell(_player, choice))
                     {
+                        //Tell the player that they purchased the item
                         Console.Clear();
                         Console.WriteLine($"You purchased the {_shop.GetItemNames()[choice]}!");
                     }
+                    //otherwise tell the player that they didn't have enough gold for the item
                     else
                     {
                         Console.Clear();
                         Console.WriteLine("You don't have enough gold for that.");
                     }
                 }
+                //otherwise tell the player that they aren't the correct class to use that item
                 else
                 {
                    
@@ -719,53 +751,75 @@ namespace Text_Based_Adventure
 
             }
 
+            //If the player selected the leave shop items...
             else if (choice == GetShopMenuOptions().Length - 3)
             {
+                //TEll the player that they left the shop
                 Console.WriteLine("You leave the shop...");
                 Console.ReadKey(true);
                 Console.Clear();
 
+                //Change the current scene to the between battles one
                 _currentScene = Scene.BETWEENBATTLES;
             }
 
+            //If the player selected the save game options...
             else if (choice == GetShopMenuOptions().Length - 2)
             {
+                //..save the game..
                 Save();
 
+                //..and tell the player that they successfully saved the game
                 Console.WriteLine("Game saved successfully!");
                 Console.ReadKey(true);
                 Console.Clear();
 
             }
+            
+            //If the player selected the quit game option...
             else if (choice == GetShopMenuOptions().Length - 1)
             {
+                //...change the game over variable to be true
                 _gameOver = true;
             }
         }
         
+        /// <summary>
+        /// Displays the restart menu
+        /// </summary>
         private void DisplayRestartMenu()
         {
+            //Asks the player if htey would like to load the game, restart the game, or quit the game, and gets their input
             int choice = GetInput("The game is over. What would you like to do?", "Load Game", "Restart Game",  "Quit Game");
 
+            //If they would like to load the game...
             if (choice == 0)
             {
+                //...if the load fails...
                 if (!Load())
                 {
+                    //...tells the player that the load fails
                     Console.WriteLine("Load failed!");
                     Console.ReadKey(true);
                     Console.Clear();
                 }
             }
 
+            //...If they choose to restart the game...
             if (choice == 1)
             {
+                //..Reinitializes the enemies...
                 InitializeEnemies();
+                //..Sets the current floor text index to 0...
                 _currentFloorTextIndex = 0;
+                //..and sets the current scene to 0
                 _currentScene = 0;
             }
 
+            //If the player chose to quit the game...
             if (choice == 2)
             {
+                //Sets the game over variable to be true
                 _gameOver = true;
             }
         }
