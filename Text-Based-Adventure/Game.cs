@@ -619,9 +619,10 @@ namespace Text_Based_Adventure
             //Gets the player's input on which item they want to select
             int choice = GetInput("Select an item to equip.", _player.GetItemNames());
 
+            //If the player's choice was in the acceptable range of the options...
             if (choice >= 0 && choice < _player.GetItemNames().Length)
             {
-
+                //If the player's choice was a health potion, and 
                 if (_player.GetItemNames()[choice] == "Health Potion" && _player.TryEquipItem(choice) )
                 {
                     Console.WriteLine("You used a health potion!");
