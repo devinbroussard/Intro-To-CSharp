@@ -7,27 +7,35 @@ namespace Text_Based_Adventure
 {
     class Player : Entity
     {
-        //Initializing private variables
+        //Definining the player's inventory
         private Item[] _inventory;
+        //Defining the player's current item
         private Item _currentItem;
+        //Defining the current item index, that will be used to fetch items from the _inventory
         private int _currentItemIndex;
+        //Defining the player's class
         private PlayerClass _job;
+        //Defining the player's gold count
         private int _gold;
         
 
-        //Creating public properties
+        //Creating public Job property that can be read and set
         public PlayerClass Job {
             get { return _job; }
             set { _job = value; }
         }
-        //Attack and defense powers change depending on which item you have equipped
+
+        //Creating readonly AttackPower and DefensePower properties that override the inherited entity's
         public override float AttackPower
         {
             get
             {
+                //If the player has an item that affects their attack stat...
                 if (_currentItem.equipType == ItemType.ATTACK)
+                    //returns their base attackpower plus the statboost from their item
                     return base.AttackPower + CurrentItem.StatBoost;
 
+                //otherwise, return their base attackpower
                 return base.AttackPower;
             }
         }
@@ -35,16 +43,22 @@ namespace Text_Based_Adventure
         {
             get
             {
+                //If the player has an item that affects their defense stat...
                 if (_currentItem.equipType == ItemType.DEFENSE)
+                    //returns their base attackpower plus the statboost from their item
                     return base.DefensePower + CurrentItem.StatBoost;
 
+                //otherwise, return their base attackpower
                 return base.DefensePower;
             }
         }
+
+        //Creating a readonly property that returns the current item
         public Item CurrentItem
         {
             get { return _currentItem; }
         }
+        //Creating a readonly property that returns the player's gold count
         public int Gold
         {
             get { return _gold; }
