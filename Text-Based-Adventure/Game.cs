@@ -789,7 +789,7 @@ namespace Text_Based_Adventure
         /// </summary>
         private void DisplayRestartMenu()
         {
-            //Asks the player if htey would like to load the game, restart the game, or quit the game, and gets their input
+            //Asks the player if they would like to load the game, restart the game, or quit the game, and gets their input
             int choice = GetInput("The game is over. What would you like to do?", "Load Game", "Restart Game",  "Quit Game");
 
             //If they would like to load the game...
