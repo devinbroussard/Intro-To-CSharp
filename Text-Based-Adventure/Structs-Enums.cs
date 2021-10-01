@@ -22,9 +22,9 @@ namespace Text_Based_Adventure
     {
         public string Name;
         public float StatBoost;
-        public ItemType equipType;
+        public ItemType EquipType;
         public int Cost;
-        public PlayerClass classType;
+        public PlayerClass ClassType;
     }
 
     /// <summary>

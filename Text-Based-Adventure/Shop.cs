@@ -42,7 +42,7 @@ namespace Text_Based_Adventure
             string[] itemClasses = new string[_inventory.Length];
 
             for (int i = 0; i < _inventory.Length; i++)
-                itemClasses[i] = $"{_inventory[i].classType}";
+                itemClasses[i] = $"{_inventory[i].ClassType}";
 
             return itemClasses;
         }
