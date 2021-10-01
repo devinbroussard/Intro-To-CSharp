@@ -78,7 +78,7 @@ namespace Text_Based_Adventure
                 itemClasses[i] = $"{_inventory[i].ClassType}";
 
 
-            //returns the stringarray
+            //returns the stringarrayS
             return itemClasses;
         }
     }
