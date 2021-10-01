@@ -468,49 +468,64 @@ namespace Text_Based_Adventure
             DisplayStats(_currentEnemy);
 
             //Gets the players input on what they want to do, and returns that input in the form of an int
-            int choice = GetInput($"A {_currentEnemy.Name} stands in front of you! What will you do:", "Attack", "Equip Item", "Remove current Item", "Save Game", "Quit Game");
+            int choice = GetInput($"A {_currentEnemy.Name} stands in front of you! What will you do:", "Attack", "Equip Item", "Remove Current Item", "Save Game", "Quit Game");
 
             Console.Clear();
 
             //If the player chose to attack...
             if (choice == 0)
             {
-                //..Calls the attack function from the player
+                //..Calls the attack function from the player and passes in the enemy
                 float damage = _player.Attack(_currentEnemy);
+                //...Displays the damage dealt by the player
                 Console.WriteLine($"You dealt {damage} damage!");
 
+                //...Calls the attack function from the enemy and passes in the player
                 damage = _currentEnemy.Attack(_player);
+                //..Displays the damage done by the enemy
                 Console.WriteLine($"The {_currentEnemy.Name} dealt {damage} damage!");
                 Console.ReadKey(true);
                 Console.Clear();
 
             }
 
+            //If the player chose to equip item...
             else if (choice == 1)
             {
+                //..Displays the equip item menu
                 DisplayEquipItemMenu();
             }
 
+            //If t he player chose to remove their current item...
             else if (choice == 2)
             {
+                //Calls the player's tryremovecurrentitem function
                 if (!_player.TryRemoveCurrentItem())
+                    //Tells the player they have nothing equipped if the function fails
                     Console.WriteLine("You don't have anything equipped.");
+                //If the function worked...
                 else
+                    //Tells the player that the item was stored in their inventory
                     Console.WriteLine("You placed the item in your bag.");
                 Console.ReadKey(true);
                 Console.Clear();
             }
 
+            //If the player chose to save the game...
             else if (choice == 3)
             {
+                //...Calls the save function
                 Save();
+                //...Tells the player that the save was successful
                 Console.WriteLine("Game saved successfully!");
                 Console.ReadKey(true);
                 Console.Clear();
             }
 
+            //if the player chose to quit the game...
             else if (choice == 4)
             {
+                //...Changes the gameover variable to be true
                 _gameOver = true;
                 return;
             }
@@ -523,52 +538,73 @@ namespace Text_Based_Adventure
         /// </summary>
         private void CheckBattleResults()
         {
+            //If the player is dead...
             if (_player.Health == 0)
             {
+                //Tells the player that they have died...
                 Console.WriteLine("You died!");
                 Console.ReadKey(true);
                 Console.Clear();
 
+                //Changes the current scene to be that of the restart menu
                 _currentScene = Scene.RESTARTMENU;
             }
 
+            //If the player isn't dead and the current enemy is dead...
             else if (_currentEnemy.Health == 0)
             {
+                //Tells the player that they have slain the enemy, and collects/tells the player how much reward money they collected
                 Console.WriteLine($"You slayed the {_currentEnemy.Name} and collected {_player.GetRewardMoney(_currentEnemy)} gold!\n");
                 Console.WriteLine($"Current Gold: {_player.Gold}");
                 Console.ReadKey(true);
                 Console.Clear();
+                //Adds to the current enemy idnex
                 _currentEnemyIndex++;
 
+                //Checks to see if the player has reached the end of the game, and returns if so
                 if (TryEndGame())
                     return;
 
+                //Sets the current enemy to be that of the currentenemyidnex
                 _currentEnemy = _enemies[_currentEnemyIndex];
 
+                //changes the current scene to be the between battles one
                 _currentScene = Scene.BETWEENBATTLES;
             }
         }
         
+        /// <summary>
+        /// Called to check if the player has reached the end of the game
+        /// </summary>
+        /// <returns></returns>
         private bool TryEndGame()
         {
+            //Creates a bool that represents if the current enemy index has reached the end of the enemies array
             bool gameOver = _currentEnemyIndex >= _enemies.Length;
+            //Creates a bool that represents if the player has reached the final index in the array
             bool fightBoss = _currentEnemyIndex == _enemies.Length - 1;
 
+            //If gameover is true...
             if (gameOver)
-            {
+            { 
+                //..Tells the player that they have reached the end of the game
                 Console.WriteLine("Congradulations, you have made it to the top of the tower! You are the best!");
                 Console.ReadKey(true);
                 Console.Clear();
 
+                //Change the scene to the restart menu
                 _currentScene = Scene.RESTARTMENU;
             }
 
+            //If fightboss variable is true..
             if (fightBoss)
             {
+                //Tells the player that the boss is on the next floor
                 Console.WriteLine("You have reached the second highest floor. The final boss awaits you.");
                 Console.ReadKey(true);
                 Console.Clear();
 
+                //Changes the scene to the between battles one
                 _currentScene = Scene.BETWEENBATTLES;
             }
 
@@ -580,6 +616,7 @@ namespace Text_Based_Adventure
         private void DisplayEquipItemMenu()
         
         {
+            //Gets the player's input on which item they want to select
             int choice = GetInput("Select an item to equip.", _player.GetItemNames());
 
             if (choice >= 0 && choice < _player.GetItemNames().Length)
