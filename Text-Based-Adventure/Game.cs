@@ -407,6 +407,9 @@ namespace Text_Based_Adventure
         /// <returns>True if the load is successful</returns>
         private bool Load()
         {
+            if (!File.Exists("SavaData.txt"))
+                return false;
+
             //crating a variable we can easily return true or false
             bool loadSuccessful = true;
             //defining a string to store the player class
