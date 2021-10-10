@@ -21,14 +21,10 @@ namespace Text_Based_Adventure
     public struct Item
     {
         public string Name;
-        //Float created to store how much it will affect the equipType stat
         public float StatBoost;
-        //ItemType variable created to store which stat the item will affect
-        public ItemType EquipType;
-        //Cost variable created to store how much the item will cost in the hsop
+        public ItemType equipType;
         public int Cost;
-        //PlayerClass variable created to store which class the item will be available to
-        public PlayerClass ClassType;
+        public PlayerClass classType;
     }
 
     /// <summary>
