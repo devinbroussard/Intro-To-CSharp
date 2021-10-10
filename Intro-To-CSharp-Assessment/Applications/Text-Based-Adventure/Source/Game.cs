@@ -258,15 +258,15 @@ namespace Text_Based_Adventure
         private void InitializeItems()
         {
             //Initializing shop items that can be sold to the player
-            Item healthPotion = new Item { Name = "Health Potion", StatBoost = 50, equipType = ItemType.HEALING, Cost = 50 };
-            Item ironShield = new Item { Name = "Iron Shield", StatBoost = 40, equipType = ItemType.DEFENSE, Cost = 200, classType = PlayerClass.KNIGHT };
-            Item longDagger = new Item { Name = "Long Dagger", StatBoost = 60, equipType = ItemType.ATTACK, Cost = 200, classType = PlayerClass.ASSASSIN };
-            Item enchantedWand = new Item { Name = "Enchanted Wand", StatBoost = 75, equipType = ItemType.ATTACK, Cost = 200, classType = PlayerClass.WIZARD };
+            Item healthPotion = new Item { Name = "Health Potion", StatBoost = 50, EquipType = ItemType.HEALING, Cost = 50 };
+            Item ironShield = new Item { Name = "Iron Shield", StatBoost = 40, EquipType = ItemType.DEFENSE, Cost = 200, ClassType = PlayerClass.KNIGHT };
+            Item longDagger = new Item { Name = "Long Dagger", StatBoost = 60, EquipType = ItemType.ATTACK, Cost = 200, ClassType = PlayerClass.ASSASSIN };
+            Item enchantedWand = new Item { Name = "Enchanted Wand", StatBoost = 75, EquipType = ItemType.ATTACK, Cost = 200, ClassType = PlayerClass.WIZARD };
 
             //Initializing start item for the knight, assassin, and wizard class, respectively
-            Item woodenShield = new Item { Name = "Wooden Shield", StatBoost = 30, equipType = ItemType.DEFENSE, Cost = 50 };
-            Item shortDagger = new Item { Name = "Short Dagger", StatBoost = 40, equipType = ItemType.ATTACK, Cost = 50 };
-            Item basicWand = new Item { Name = "Basic Wand", StatBoost = 60, equipType = ItemType.ATTACK, Cost = 50 };
+            Item woodenShield = new Item { Name = "Wooden Shield", StatBoost = 30, EquipType = ItemType.DEFENSE, Cost = 50 };
+            Item shortDagger = new Item { Name = "Short Dagger", StatBoost = 40, EquipType = ItemType.ATTACK, Cost = 50 };
+            Item basicWand = new Item { Name = "Basic Wand", StatBoost = 60, EquipType = ItemType.ATTACK, Cost = 50 };
 
             //Defining the class-specific item arrays that allow for the items to be accessed anywhere in the game class
             _knightItems = new Item[] { woodenShield };
@@ -407,11 +407,7 @@ namespace Text_Based_Adventure
         /// <returns>True if the load is successful</returns>
         private bool Load()
         {
-            //If the player doesn't have a save file, then immediately return false
-            if (!File.Exists("SaveData.txt"))
-                return false;
-
-            //creating a variable we can easily return true or false
+            //crating a variable we can easily return true or false
             bool loadSuccessful = true;
             //defining a string to store the player class
             PlayerClass playerJob;
@@ -793,7 +789,7 @@ namespace Text_Based_Adventure
         /// </summary>
         private void DisplayRestartMenu()
         {
-            //Asks the player if htey would like to load the game, restart the game, or quit the game, and gets their input
+            //Asks the player if they would like to load the game, restart the game, or quit the game, and gets their input
             int choice = GetInput("The game is over. What would you like to do?", "Load Game", "Restart Game",  "Quit Game");
 
             //If they would like to load the game...
