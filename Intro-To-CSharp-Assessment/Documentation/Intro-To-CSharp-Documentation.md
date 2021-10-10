@@ -5,7 +5,7 @@ Text Based Adventure Application
  # **I. Requirements**  #
 
 >**1. Description of Problem**  
->>**Name**: Text Based Adventure
+>>**Name**: *Text Based Adventure*
 >>  
 >>**Problem Statement**:  
 >>>Demonstrate competence in foundational data structures and file handling, array processing, and debugging.  
@@ -19,12 +19,18 @@ Text Based Adventure Application
 >>**Description:**
 >>> A text-based console application that has the player fight multiple enemies, earning gold and new items on the way to the final boss.
 
+>**2. Input Information**
+>>* During the game, the player will receieve questions that they will answer via typing to the console. Sometimes, they will be required to answer with a word or phrase, and other times, they will be required to type the number of a labled option given to them. 
+
+>**3. Output Information**
+>>* The player's input will mostly be used to navigate through scenes and battles. During battles, both the player and enemy's stats will be displayed between turns. The player will also be notified of what room they are currently in.
+
 # **II. Design** #
 >**1. System Archetecture:**
->> In this game, all gameplay is contained within the Game.cs file. This file creates instances of other objects from classes like the player class, the entity class, and the shop class. These classes only handle backend calculations. The Structs-Enumcs.cs file contains any structs or enums used in the application. 
+>> The main game loop is contained inside of Game.cs, along with all UI and scenes. The scenes are displayed through a switch statement that changes the display based on each scene. When the game is started, the player has the option to load or start a new game. During the game, the player will will climb a tower while defeating enemies. The win condition for this game is to defeat the boss at the top of the tower. The player is able to select a class, and purchase class-specific items from a shop between battles. They are also able to save, or quit the game at almost any point in the game. If the player wins or loses, they are able to restart the game, load a save, or quit.
 
 >**2. Object Information**  
->> * **File:** Game.cs
+>> * **1. File:** Game.cs
 >> * **Attributes:**   
 >>>> * Name: _playerName
 >>>>> * Description: Holds the player's name until the player object is initialized
@@ -137,7 +143,7 @@ Text Based Adventure Application
 >>>> * Name: DisplayRestartMenu()
 >>>>> * Description: Asks the player if they would like to restart, load, or quit the game
 >>>>> * Type:  void
->> * **File:** Entity.cs
+>> * **2. File:** Entity.cs
 >> * **Attributes:**  
 >>>> * Name: _name
 >>>>> * Description: variable used to store the entity's name 
@@ -190,7 +196,7 @@ Text Based Adventure Application
 >>>> * Name: Load(StreamReader reader)
 >>>>> * Description: Virtual function that loads the stats of the entity from a text file; returns true if successful
 >>>>> * Type: bool
->> * **File:** Player.cs
+>> * **3. File:** Player.cs
 >> * **Attributes:**  
 >>>> * Name: _inventory
 >>>>> * Description: array that holds the player's items
@@ -243,7 +249,7 @@ Text Based Adventure Application
 >>>> * Name: Buy(Item item)
 >>>>> * Description: Function used to buy an item from the shop; called in the shop's sell function
 >>>>> * Type: void
->> * **File:** Shop.cs
+>> * **4. File:** Shop.cs
 >> * **Attributes:**
 >>>> * Name: _gold
 >>>>> * Description: stores the shop's gold; used for debugging only 
@@ -263,7 +269,7 @@ Text Based Adventure Application
 >>>> * Name: GetItemClasses()
 >>>>> * Description: creates an array that stores the class needed to use each item
 >>>>> * Type: string[]
->> * **File:** Structs-Enums.cs
+>> * **5. File:** Structs-Enums.cs
 >> * **Attributes:**
 >>>> * Name: ItemType
 >>>>> * Description: Holds the different types of items
